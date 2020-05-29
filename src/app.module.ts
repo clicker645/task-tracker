@@ -1,12 +1,16 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
+import { UserModule } from './app/user/user.module';
+import { AuthModule } from './app/auth/auth.module';
 
 import { configModule } from './configure.root';
-import { TokenModule } from './token/token.module';
-import { MailModule } from './mail/mail.module';
+import { TokenModule } from './components/token/token.module';
+import { MailModule } from './components/mail/mail.module';
+import { ItemModule } from './app/item/item.module';
+import { CasbinRBACMiddleware } from './middlewares/casbin.middleware';
+import { CasbinModule } from './app/casbin/casbin.module';
+import { UserController } from './app/user/user.controller';
 
 @Module({
   imports: [
@@ -19,6 +23,13 @@ import { MailModule } from './mail/mail.module';
     UserModule,
     TokenModule,
     MailModule,
+    ItemModule,
+    CasbinModule,
   ],
+  controllers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): any {
+    consumer.apply(CasbinRBACMiddleware).forRoutes(UserController);
+  }
+}

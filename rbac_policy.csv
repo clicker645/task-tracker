@@ -1,0 +1,6 @@
+p, admin_group, /user, (POST)
+p, admin_group, /user/*, (DELETE)
+p, user_group, /user, (GET)
+p, user_group, /user/*, (GET)
+g, user, user_group
+g, admin, admin_group
