@@ -22,7 +22,7 @@ export class UserController {
 
   @Get('/:id')
   async getOne(@Param('id') id: string) {
-    return this.userService.find(id);
+    return this.userService.findById(id);
   }
 
   @Get('/')

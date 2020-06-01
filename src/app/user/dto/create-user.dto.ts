@@ -35,5 +35,5 @@ export class CreateUserDto {
     { message: 'Weak password' },
   )
   @ApiProperty()
-  readonly password: string;
+  password: string;
 }

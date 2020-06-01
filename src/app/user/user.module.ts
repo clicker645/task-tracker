@@ -5,17 +5,14 @@ import { UserSchema } from './schemas/user.schema';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { TokenModule } from '../../components/token/token.module';
-import { MailModule } from '../../components/mail/mail.module';
-import { ConfigModule } from '@nestjs/config';
+import { UserRepository } from './repositories/mongoose/user.repository';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     TokenModule,
-    MailModule,
-    ConfigModule,
   ],
-  providers: [UserService],
+  providers: [UserService, UserRepository],
   controllers: [UserController],
   exports: [UserService],
 })
