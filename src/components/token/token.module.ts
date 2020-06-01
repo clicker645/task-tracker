@@ -4,6 +4,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TokenSchema } from './schemas/user-token.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { configModule } from '../../configure.root';
+import { MailService } from '../mail/mail.service';
+import { ConfigService } from '@nestjs/config';
+import { TokenRepository } from './repositories/mongoose/token.repository';
 
 @Module({
   imports: [
@@ -13,8 +16,10 @@ import { configModule } from '../../configure.root';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1d' },
     }),
+    MailService,
+    ConfigService,
   ],
-  providers: [TokenService],
+  providers: [TokenService, TokenRepository, MailService],
   exports: [TokenService],
 })
 export class TokenModule {}
