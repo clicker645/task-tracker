@@ -18,13 +18,6 @@ import { IReadableUser } from 'src/app/user/interfaces/readable-user.interface';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // @Post('/signUp')
-  // async signUp(
-  //   @Body(new ValidationPipe()) createUserDto: CreateUserDto,
-  // ): Promise<boolean> {
-  //   return this.authService.signUp(createUserDto);
-  // }
-
   @Get('/confirm')
   async confirm(
     @Query(new ValidationPipe()) query: ConfirmAccountDto,

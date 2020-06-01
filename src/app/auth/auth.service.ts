@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  BadRequestException,
-  MethodNotAllowedException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, BadRequestException, HttpException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as _ from 'lodash';
 import * as moment from 'moment';
@@ -11,7 +6,6 @@ import * as moment from 'moment';
 import { UserService } from 'src/app/user/user.service';
 import { TokenService } from 'src/components/token/token.service';
 import { IUser } from 'src/app/user/interfaces/user.interface';
-import { ConfigService } from '@nestjs/config';
 import { statusEnum } from 'src/app/user/enums/status.enum';
 import { SignInDto } from './dto/signin.dto';
 import { ITokenPayload } from './interfaces/token-payload.interface';
@@ -23,7 +17,6 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly tokenService: TokenService,
-    private readonly configService: ConfigService,
   ) {}
 
   async login({ email, password }: SignInDto): Promise<IReadableUser> {
@@ -31,7 +24,7 @@ export class AuthService {
 
     if (user && (await bcrypt.compare(password, user.password))) {
       if (user.status !== statusEnum.active) {
-        throw new MethodNotAllowedException();
+        throw new HttpException('Account not verified', 405);
       }
       const tokenPayload: ITokenPayload = {
         _id: user._id,
@@ -57,19 +50,20 @@ export class AuthService {
         Object.values(userSensitiveFieldsEnum),
       ) as IReadableUser;
     }
+
     throw new BadRequestException('Invalid credentials');
   }
 
   async logout(token: string): Promise<{ ok?: number; n?: number }> {
     const data = (await this.tokenService.verify(token)) as ITokenPayload;
-    return this.tokenService.delete(data._id);
+    return this.tokenService.deleteByUserId(data._id);
   }
 
   async confirm(token: string): Promise<IUser> {
     const data = await this.tokenService.verify(token);
-    const user = await this.userService.find(data._id);
+    const user = await this.userService.findById(data._id);
 
-    await this.tokenService.delete(data._id);
+    await this.tokenService.deleteByUserId(data._id);
 
     if (user && user.status === statusEnum.pending) {
       user.status = statusEnum.active;

@@ -3,7 +3,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
-import { configModule } from '../../configure.root';
 import { PassportModule } from '@nestjs/passport';
 import { TokenModule } from 'src/components/token/token.module';
 import { UserModule } from '../user/user.module';
@@ -12,7 +11,6 @@ import { UserModule } from '../user/user.module';
   imports: [
     UserModule,
     TokenModule,
-    configModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
