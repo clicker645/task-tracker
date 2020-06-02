@@ -1,5 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { newEnforcer, Enforcer, Adapter } from 'casbin';
+import { Injectable } from '@nestjs/common';
+import { newEnforcer, Enforcer } from 'casbin';
 import { join } from 'path';
 
 @Injectable()
@@ -21,7 +21,6 @@ export class CasbinService {
     role: string,
     method: string,
   ): Promise<boolean> {
-    console.log(role, url, method);
     return await this.enforcer.enforce(role, url, method);
   }
 }

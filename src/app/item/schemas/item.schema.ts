@@ -1,8 +1,6 @@
 import * as pagination from 'mongoose-paginate-v2';
 import * as mongoose from 'mongoose';
 import { statusEnum } from '../enums/status.enum';
-import * as diffHistory from 'mongoose-diff-history/diffHistory';
-import { Logger } from '@nestjs/common';
 
 export const ItemSchema = new mongoose.Schema({
   title: { type: String, required: true },

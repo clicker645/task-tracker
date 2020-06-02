@@ -4,7 +4,6 @@ import {
   NestMiddleware,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthService } from '../app/auth/auth.service';
 import { ITokenPayload } from '../app/auth/interfaces/token-payload.interface';
 import { CasbinService } from '../app/casbin/casbin.service';
 import { TokenService } from '../components/token/token.service';

@@ -15,13 +15,13 @@ export class BaseRepository<T extends Document, R>
   }
 
   async delete(_id: string): Promise<any> {
-    // @ts-ignore
-    return this.model.deleteOne({ _id });
+    const condition: FilterQuery<{}> = { _id };
+    return this.model.deleteOne(condition);
   }
 
   async update(_id: string, payload: Partial<T>): Promise<T> {
-    // @ts-ignore
-    return this.model.updateOne({ _id }, payload);
+    const condition: FilterQuery<{}> = { _id };
+    return this.model.updateOne(condition, payload);
   }
 
   async create(createDto: R): Promise<T> {

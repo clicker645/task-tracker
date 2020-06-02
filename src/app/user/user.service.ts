@@ -1,10 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import * as _ from 'lodash';
-
 import { IUser } from './interfaces/user.interface';
-import { PaginateModel, PaginateResult } from 'mongoose';
+import { PaginateResult } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PaginationOptions } from '../../components/pagination/paginate.params';
 import { ChangePasswordDto } from './dto/change-password.dto';
@@ -33,17 +30,17 @@ export class UserService {
   }
 
   async create(createUserDto: CreateUserDto): Promise<IUser> {
-    // const hash = await this.hashPassword(createUserDto.password);
-    // const createdUser = new this.userModel(
-    //   _.assignIn(createUserDto, { password: hash }),
-    // );
-
-    // const user = await createdUser.save();
-
-    createUserDto.password = await this.hashPassword(createUserDto.password);
-    const user = await this.userRepository.create(createUserDto);
-    await this.tokenService.sendConfirmation(user);
-    return user;
+    try {
+      createUserDto.password = await this.hashPassword(createUserDto.password);
+      const user = await this.userRepository.create(createUserDto);
+      await this.tokenService.sendConfirmation(user);
+      return;
+    } catch (e) {
+      throw new BadRequestException({
+        message: 'This email already used',
+        reason: e,
+      });
+    }
   }
 
   async findById(id: string): Promise<IUser> {

@@ -1,6 +1,4 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { IUserToken } from './interfaces/user-token.interface';
 import { CreateUserTokenDto } from './dto/create-user-token.dto';
 import { ITokenPayload } from '../../app/auth/interfaces/token-payload.interface';
@@ -14,8 +12,8 @@ import { TokenRepository } from './repositories/mongoose/token.repository';
 @Injectable()
 export class TokenService {
   constructor(
-    private configService: ConfigService,
-    private mailService: MailService,
+    private readonly configService: ConfigService,
+    private readonly mailService: MailService,
     private readonly jwtService: JwtService,
     private readonly tokenRepository: TokenRepository,
   ) {}
@@ -26,6 +24,14 @@ export class TokenService {
 
   async generate(data: ITokenPayload, options?: SignOptions): Promise<string> {
     return this.jwtService.sign(data, options);
+  }
+
+  async getUserDataFromToken(token: string): Promise<ITokenPayload> {
+    try {
+      return (await this.jwtService.verify(token)) as ITokenPayload;
+    } catch (e) {
+      throw new Error('Error: wrong access token');
+    }
   }
 
   async deleteByUserId(uId: string): Promise<{ ok?: number; n?: number }> {

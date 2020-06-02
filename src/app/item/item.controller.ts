@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   Param,
   Patch,
   Post,
@@ -34,9 +35,18 @@ export class ItemController {
 
   @Patch('/:id')
   async update(
+    @Headers('authorization') token: string,
     @Param('id') id: string,
     @Body(new ValidationPipe()) data: UpdateItemDto,
   ) {
-    return this.itemService.update(id, data);
+    return this.itemService.update(token, id, data);
+  }
+
+  @Get('/shared/:user_id')
+  async getSharedItems(
+    @Param('user_id') userId: string,
+    @Query() pagination: PaginationOptions,
+  ) {
+    return this.itemService.getSharedItems(userId, pagination);
   }
 }

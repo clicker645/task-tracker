@@ -51,7 +51,9 @@ export class AuthService {
       ) as IReadableUser;
     }
 
-    throw new BadRequestException('Invalid credentials');
+    throw new BadRequestException(
+      'User with specified username/passwordnot found',
+    );
   }
 
   async logout(token: string): Promise<{ ok?: number; n?: number }> {
@@ -70,5 +72,13 @@ export class AuthService {
       return user.save();
     }
     throw new BadRequestException('Confirmation error');
+  }
+
+  async getCurrentUser(token): Promise<ITokenPayload> {
+    if (token) {
+      return this.tokenService.getUserDataFromToken(token);
+    }
+
+    throw new Error("Error: user doesn't have access token.");
   }
 }
