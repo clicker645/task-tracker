@@ -6,11 +6,9 @@ export enum ModelsEnum {
   SHARE = 'Share',
 }
 
-//export const ModelsArray = ['User', 'Item', 'Token', 'Share'];
-
 export const getModelsArray = () => {
   const data = [];
-  for (let [key, model] of Object.keys(ModelsEnum)) {
+  for (const [key, model] of Object.keys(ModelsEnum)) {
     data.push(model);
   }
 };

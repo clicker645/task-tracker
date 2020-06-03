@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DocumentHistoryRepository } from './repositories/mongoose/document-history.repository';
 import * as mongoose from 'mongoose';
 import { DocumentHistoryDto } from './dto/create-document-history.dto';

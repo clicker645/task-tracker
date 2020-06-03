@@ -27,5 +27,5 @@ export class PaginationOptions implements mongoose.PaginateOptions {
   pagination?: boolean;
 
   @ApiPropertyOptional()
-  populate?: Object[] | string[] | Object;
+  populate?: Record<string, any>[] | string[] | Record<string, any>;
 }
