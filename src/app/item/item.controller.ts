@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ItemService } from './item.service';
-import { PaginationOptions } from '../../components/pagination/paginate.params';
+import { PaginationOptions } from '../../infrastructure/databases/mongoose/paginate.params';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 
@@ -48,5 +48,13 @@ export class ItemController {
     @Query() pagination: PaginationOptions,
   ) {
     return this.itemService.getSharedItems(userId, pagination);
+  }
+
+  @Get('/history/:id')
+  async getHistoryBy(
+    @Param('id') id: string,
+    @Query() pagination: PaginationOptions,
+  ) {
+    return this.itemService.getHistoryBy(id, pagination);
   }
 }

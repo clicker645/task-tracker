@@ -6,18 +6,21 @@ import {
 import { PaginateResult } from 'mongoose';
 import { IItem } from './interfaces/item.interface';
 import { CreateItemDto } from './dto/create-item.dto';
-import { PaginationOptions } from '../../components/pagination/paginate.params';
+import { PaginationOptions } from '../../infrastructure/databases/mongoose/paginate.params';
 import { ItemRepository } from './repositories/mongoose/item.repository';
 import { AuthService } from '../auth/auth.service';
 import { ShareService } from '../share/share.service';
 import { AccessType } from '../share/enums/access-type.enum';
-
+import { DocumentHistoryService } from '../../infrastructure/databases/mongoose/document-history/document-history.service';
+import { ModelsEnum } from '../../models/models.enum';
+import { IDocumentHistory } from '../../infrastructure/databases/mongoose/document-history/interfaces/document-history.interface';
 @Injectable()
 export class ItemService {
   constructor(
     private readonly itemRepository: ItemRepository,
     private readonly authService: AuthService,
     private readonly shareService: ShareService,
+    private readonly docHistoryService: DocumentHistoryService,
   ) {}
 
   async create(createItemDto: CreateItemDto): Promise<IItem> {
@@ -69,7 +72,15 @@ export class ItemService {
         AccessType.ReadWrite,
       ))
     ) {
-      return this.itemRepository.update(_id, payload);
+      const oldItem = await this.itemRepository.findById(_id);
+      const result = await this.itemRepository.update(_id, payload);
+      this.docHistoryService
+        .saveChangeHistory(ModelsEnum.ITEM, currentUser._id, oldItem, payload)
+        .catch(e => {
+          console.log(e);
+        });
+
+      return result;
     }
 
     throw new ForbiddenException(
@@ -79,5 +90,12 @@ export class ItemService {
 
   async delete(_id: string): Promise<any> {
     return this.itemRepository.delete(_id);
+  }
+
+  async getHistoryBy(
+    id: string,
+    options: PaginationOptions,
+  ): Promise<PaginateResult<IDocumentHistory>> {
+    return await this.docHistoryService.getHistoryByDocId(id, options);
   }
 }
