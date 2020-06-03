@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { IUser } from '../../app/user/interfaces/user.interface';
 import * as moment from 'moment';
 import { ConfigService } from '@nestjs/config';
-import { MailService } from '../mail/mail.service';
+import { MailService } from '../../infrastructure/mail/mail.service';
 import { TokenRepository } from './repositories/mongoose/token.repository';
 @Injectable()
 export class TokenService {

@@ -1,6 +1,6 @@
-import { IBaseRepository } from './interfaces/base.repository.interface';
 import { PaginateModel, PaginateResult, Document, FilterQuery } from 'mongoose';
-import { PaginationOptions } from '../pagination/paginate.params';
+import { PaginationOptions } from './paginate.params';
+import { IBaseRepository } from '../base.repository.interface';
 
 export class BaseRepository<T extends Document, R>
   implements IBaseRepository<T, R> {

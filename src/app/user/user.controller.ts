@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
-import { PaginationOptions } from '../../components/pagination/paginate.params';
+import { PaginationOptions } from '../../infrastructure/databases/mongoose/paginate.params';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 

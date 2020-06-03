@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
-import { genderEnum } from '../enums/gender.enum';
-import { roleEnum } from '../enums/role.enum';
-import { statusEnum } from '../enums/status.enum';
+import { genderEnum } from '../../../enums/gender.enum';
+import { roleEnum } from '../../../enums/role.enum';
+import { statusEnum } from '../../../enums/status.enum';
 import * as pagination from 'mongoose-paginate-v2';
 
 export const UserSchema = new mongoose.Schema({

@@ -4,12 +4,13 @@ import { UserModule } from './app/user/user.module';
 import { AuthModule } from './app/auth/auth.module';
 import { configModule } from './configure.root';
 import { TokenModule } from './components/token/token.module';
-import { MailModule } from './components/mail/mail.module';
+import { MailModule } from './infrastructure/mail/mail.module';
 import { ItemModule } from './app/item/item.module';
 import { CasbinRBACMiddleware } from './middlewares/casbin.middleware';
 import { CasbinModule } from './app/casbin/casbin.module';
 import { UserController } from './app/user/user.controller';
 import { ShareModule } from './app/share/share.module';
+import { DocumentHistoryModule } from './infrastructure/databases/mongoose/document-history/document-history.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ShareModule } from './app/share/share.module';
       useNewUrlParser: true,
       useUnifiedTopology: true,
     }),
+    DocumentHistoryModule,
     AuthModule,
     UserModule,
     TokenModule,

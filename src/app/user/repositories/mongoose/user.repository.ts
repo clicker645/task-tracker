@@ -1,15 +1,18 @@
-import { BaseRepository } from '../../../../components/repository/base.repository';
+import { BaseRepository } from '../../../../infrastructure/databases/mongoose/base.repository';
 import { IUser } from '../../interfaces/user.interface';
 import { CreateUserDto } from '../../dto/create-user.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginateModel } from 'mongoose';
 import { IUserRepository } from '../user.repository.interface';
+import { ModelsEnum } from '../../../../models/models.enum';
 
 @Injectable()
 export class UserRepository extends BaseRepository<IUser, CreateUserDto>
   implements IUserRepository {
-  constructor(@InjectModel('User') private userModel: PaginateModel<IUser>) {
+  constructor(
+    @InjectModel(ModelsEnum.USER) private userModel: PaginateModel<IUser>,
+  ) {
     super(userModel);
   }
 

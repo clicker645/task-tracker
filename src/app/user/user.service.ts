@@ -3,7 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { IUser } from './interfaces/user.interface';
 import { PaginateResult } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
-import { PaginationOptions } from '../../components/pagination/paginate.params';
+import { PaginationOptions } from '../../infrastructure/databases/mongoose/paginate.params';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { TokenService } from '../../components/token/token.service';
 import { UserRepository } from './repositories/mongoose/user.repository';
