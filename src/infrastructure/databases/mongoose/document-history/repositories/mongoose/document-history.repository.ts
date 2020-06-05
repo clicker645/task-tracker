@@ -23,8 +23,6 @@ export class DocumentHistoryRepository
     _id: string,
     options: PaginationOptions,
   ): Promise<PaginateResult<IDocumentHistory>> {
-    options.populate = ModelsEnum.USER.toLowerCase();
-
     return await this.historyModel.paginate(
       {
         document: _id,

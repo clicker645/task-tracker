@@ -1,5 +1,4 @@
-p, admin_group, /user, (POST)|(GET)|(PATCH)
-p, admin_group, /user/*, (DELETE)
+p, admin_group, /user*, (POST)|(GET)|(PATCH)|(DELETE)
 p, user_group, /user, (GET)
 p, user_group, /user/*, (GET)
 g, user, user_group

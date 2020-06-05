@@ -8,6 +8,7 @@ import { AuthModule } from '../auth/auth.module';
 import { ShareModule } from '../share/share.module';
 import { ModelsEnum } from '../../models/models.enum';
 import { DocumentHistoryModule } from '../../infrastructure/databases/mongoose/document-history/document-history.module';
+
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: ModelsEnum.ITEM, schema: ItemSchema }]),

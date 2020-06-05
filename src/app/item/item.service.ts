@@ -1,6 +1,8 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { PaginateResult } from 'mongoose';
@@ -24,11 +26,19 @@ export class ItemService {
   ) {}
 
   async create(createItemDto: CreateItemDto): Promise<IItem> {
-    return await this.itemRepository.create(createItemDto);
+    try {
+      return await this.itemRepository.create(createItemDto);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
   }
 
   async get(pagination: PaginationOptions): Promise<PaginateResult<IItem>> {
-    return this.itemRepository.findAll({}, pagination);
+    try {
+      return this.itemRepository.findAll({}, pagination);
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
   }
 
   async getSharedItems(
@@ -41,22 +51,34 @@ export class ItemService {
       sharedItemsId.push(sharedItem.itemId);
     });
 
-    return await this.itemRepository.findAll(
-      {
-        _id: sharedItemsId,
-      },
-      pagination,
-    );
+    try {
+      return await this.itemRepository.findAll(
+        {
+          _id: sharedItemsId,
+        },
+        pagination,
+      );
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
   }
 
   async getByUser(
+    token: string,
     userId: string,
     pagination: PaginationOptions,
   ): Promise<PaginateResult<IItem>> {
     try {
+      const currentUser = await this.authService.getCurrentUser(token);
+      if (userId !== currentUser._id) {
+        throw new ForbiddenException(
+          "Error: you can't get items from another users",
+        );
+      }
+
       return this.itemRepository.getByUser(userId, pagination);
     } catch (e) {
-      throw new NotFoundException(e);
+      throw new BadRequestException(e);
     }
   }
 
@@ -72,15 +94,19 @@ export class ItemService {
         AccessType.ReadWrite,
       ))
     ) {
-      const oldItem = await this.itemRepository.findById(_id);
-      const result = await this.itemRepository.update(_id, payload);
-      this.docHistoryService
-        .saveChangeHistory(ModelsEnum.ITEM, currentUser._id, oldItem, payload)
-        .catch(e => {
-          console.log(e);
-        });
+      try {
+        const oldItem = await this.itemRepository.findById(_id);
+        const result = await this.itemRepository.update(_id, payload);
+        this.docHistoryService
+          .saveChangeHistory(ModelsEnum.ITEM, currentUser._id, oldItem, payload)
+          .catch(e => {
+            console.log(e);
+          });
 
-      return result;
+        return result;
+      } catch (e) {
+        throw new InternalServerErrorException(e);
+      }
     }
 
     throw new ForbiddenException(
@@ -89,13 +115,21 @@ export class ItemService {
   }
 
   async delete(_id: string): Promise<any> {
-    return this.itemRepository.delete(_id);
+    try {
+      return this.itemRepository.delete(_id);
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
   }
 
   async getHistoryBy(
     id: string,
     options: PaginationOptions,
   ): Promise<PaginateResult<IDocumentHistory>> {
-    return await this.docHistoryService.getHistoryByDocId(id, options);
+    try {
+      return await this.docHistoryService.getHistoryByDocId(id, options);
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
   }
 }

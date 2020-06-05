@@ -1,11 +1,11 @@
-import { BaseRepository } from '../../../../infrastructure/databases/mongoose/base.repository';
+import { BaseRepository } from '../../../../../infrastructure/databases/mongoose/base.repository';
 import { IUserToken } from '../../interfaces/user-token.interface';
 import { CreateUserTokenDto } from '../../dto/create-user-token.dto';
 import { ITokenRepository } from '../token.repository.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginateModel } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { ModelsEnum } from '../../../../models/models.enum';
+import { ModelsEnum } from '../../../../../models/models.enum';
 
 @Injectable()
 export class TokenRepository

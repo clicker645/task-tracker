@@ -1,12 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { IUser } from './interfaces/user.interface';
-import { PaginateResult } from 'mongoose';
+import { FilterQuery, PaginateResult } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/paginate.params';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { TokenService } from '../../components/token/token.service';
+import { TokenService } from '../auth/token/token.service';
 import { UserRepository } from './repositories/mongoose/user.repository';
+import { QueryUserDto } from './dto/query-user.dto';
+import { statusEnum } from './enums/status.enum';
 
 @Injectable()
 export class UserService {
@@ -59,7 +61,25 @@ export class UserService {
     return await this.userRepository.delete(_id);
   }
 
-  async findAll(options: PaginationOptions): Promise<PaginateResult<IUser>> {
-    return await this.userRepository.findAll({}, options);
+  async search(
+    search: string,
+    options: PaginationOptions,
+  ): Promise<PaginateResult<IUser>> {
+    return await this.userRepository.findAll(
+      {
+        $or: [
+          { email: { $regex: search, $options: 'i' } },
+          { login: { $regex: search, $options: 'i' } },
+        ],
+      },
+      options,
+    );
+  }
+
+  async findAll(
+    queryParams: QueryUserDto,
+    options: PaginationOptions,
+  ): Promise<PaginateResult<IUser>> {
+    return await this.userRepository.findAll(queryParams, options);
   }
 }

@@ -9,8 +9,8 @@ export class CasbinService {
   // TODO Migrate RBAC_POLICY to mongodb use mongoose
   constructor() {
     newEnforcer(
-      join(__dirname, '../../../rbac_model.conf'),
-      join(__dirname, '../../../rbac_policy.csv'),
+      join(__dirname, '../../../../rbac_model.conf'),
+      join(__dirname, '../../../../rbac_policy.csv'),
     ).then(e => {
       this.enforcer = e;
     });

@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from './repositories/mongoose/schemas/user.schema';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
-import { TokenModule } from '../../components/token/token.module';
+import { TokenModule } from '../auth/token/token.module';
 import { UserRepository } from './repositories/mongoose/user.repository';
 import { ModelsEnum } from '../../models/models.enum';
 

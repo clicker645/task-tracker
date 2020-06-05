@@ -11,9 +11,10 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
-import { PaginationOptions } from '../../infrastructure/databases/mongoose/paginate.params';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { QueryUserDto } from './dto/query-user.dto';
+import { PaginationOptions } from '../../infrastructure/databases/mongoose/paginate.params';
 
 @ApiTags('user')
 @Controller('user')
@@ -26,8 +27,14 @@ export class UserController {
   }
 
   @Get('/')
-  async getAll(@Query(new ValidationPipe()) query: PaginationOptions) {
-    return this.userService.findAll(query);
+  async getAll(
+    @Query() query: QueryUserDto,
+    @Query(new ValidationPipe()) pagination: PaginationOptions,
+  ) {
+    return this.userService.findAll(
+      new QueryUserDto().factory(query),
+      pagination,
+    );
   }
 
   @Delete('/:id')
@@ -43,8 +50,16 @@ export class UserController {
     return this.userService.update(id, payload);
   }
 
-  @Post()
+  @Post('/')
   async create(@Body(new ValidationPipe()) user: CreateUserDto) {
     return this.userService.create(user);
+  }
+
+  @Get('/search/:data')
+  async search(
+    @Param('data') data: string,
+    @Query(new ValidationPipe()) pagination: PaginationOptions,
+  ) {
+    return this.userService.search(data, pagination);
   }
 }

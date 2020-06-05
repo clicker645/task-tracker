@@ -1,13 +1,13 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { IUserToken } from './interfaces/user-token.interface';
 import { CreateUserTokenDto } from './dto/create-user-token.dto';
-import { ITokenPayload } from '../../app/auth/interfaces/token-payload.interface';
+import { ITokenPayload } from '../interfaces/token-payload.interface';
 import { SignOptions } from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
-import { IUser } from '../../app/user/interfaces/user.interface';
+import { IUser } from '../../user/interfaces/user.interface';
 import * as moment from 'moment';
 import { ConfigService } from '@nestjs/config';
-import { MailService } from '../../infrastructure/mail/mail.service';
+import { MailService } from '../../../infrastructure/mail/mail.service';
 import { TokenRepository } from './repositories/mongoose/token.repository';
 @Injectable()
 export class TokenService {

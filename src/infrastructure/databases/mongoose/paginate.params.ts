@@ -3,7 +3,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class PaginationOptions implements mongoose.PaginateOptions {
   @ApiPropertyOptional()
-  select?: string;
+  select?: Object | string;
 
   @ApiPropertyOptional()
   sort?: string;
@@ -26,6 +26,6 @@ export class PaginationOptions implements mongoose.PaginateOptions {
   @ApiPropertyOptional()
   pagination?: boolean;
 
-  @ApiPropertyOptional()
-  populate?: Record<string, any>[] | string[] | Record<string, any>;
+  @ApiPropertyOptional({ type: [String] })
+  populate?: string[];
 }

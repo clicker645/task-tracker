@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ShareRepository } from './repositories/mongoose/share.repository';
 import { CreateShareItemDto } from './dto/create-share-item.dto';
 import { IShareItem } from './interfaces/share-item.interface';
@@ -22,7 +26,11 @@ export class ShareService {
   async getSharedItemByUser(
     userId: string,
   ): Promise<PaginateResult<IShareItem>> {
-    return await this.shareRepository.findAll({ userId }, {});
+    try {
+      return await this.shareRepository.findAll({ userId }, {});
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
   }
 
   async checkPermission(

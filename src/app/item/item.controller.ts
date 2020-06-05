@@ -9,7 +9,7 @@ import {
   Query,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ItemService } from './item.service';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/paginate.params';
 import { CreateItemDto } from './dto/create-item.dto';
@@ -22,10 +22,11 @@ export class ItemController {
 
   @Get('/:user_id')
   async getByUser(
+    @Headers('authorization') token: string,
     @Param('user_id') userId: string,
     @Query(new ValidationPipe()) pagination: PaginationOptions,
   ) {
-    return this.itemService.getByUser(userId, pagination);
+    return this.itemService.getByUser(token, userId, pagination);
   }
 
   @Post('/')

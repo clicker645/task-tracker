@@ -23,13 +23,4 @@ export class ItemRepository extends BaseRepository<IItem, CreateItemDto>
   ): Promise<PaginateResult<IItem>> {
     return await this.itemModel.paginate({ uId: userId }, pagination);
   }
-
-  // async addHistoryChange(_id: string, data: CreateChangeHistoryDto) {
-  //   return this.itemModel.updateOne(
-  //     { _id },
-  //     {
-  //       $push: { changeHistory: data },
-  //     },
-  //   );
-  // }
 }

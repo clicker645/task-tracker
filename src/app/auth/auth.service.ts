@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 
 import { UserService } from 'src/app/user/user.service';
-import { TokenService } from 'src/components/token/token.service';
+import { TokenService } from 'src/app/auth/token/token.service';
 import { IUser } from 'src/app/user/interfaces/user.interface';
 import { statusEnum } from 'src/app/user/enums/status.enum';
 import { SignInDto } from './dto/signin.dto';
@@ -19,6 +19,7 @@ export class AuthService {
     private readonly tokenService: TokenService,
   ) {}
 
+  // TODO Migrate storage for token in redis
   async login({ email, password }: SignInDto): Promise<IReadableUser> {
     const user = await this.userService.findByEmail(email);
 
@@ -31,6 +32,7 @@ export class AuthService {
         status: user.status,
         role: user.role,
       };
+
       const token = await this.tokenService.generate(tokenPayload);
       const expireAt = moment()
         .add(1, 'day')

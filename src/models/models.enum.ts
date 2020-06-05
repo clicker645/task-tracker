@@ -8,7 +8,7 @@ export enum ModelsEnum {
 
 export const getModelsArray = () => {
   const data = [];
-  for (const [key, model] of Object.keys(ModelsEnum)) {
+  for (const [, model] of Object.keys(ModelsEnum)) {
     data.push(model);
   }
 };
