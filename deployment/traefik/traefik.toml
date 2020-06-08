@@ -1,0 +1,47 @@
+defaultEntryPoints = ["http"]
+
+[log]
+    filePath = "/var/log/traefik/log-file.log"
+    format = "json"
+    level = "ERROR"
+
+[api]
+    dashboard = true
+    insecure = true
+    debug = true
+
+[entryPoints]
+    [entryPoints.web]
+        address = ":80"
+    [entryPoints.httpsWEB]
+        address = ":443"
+    [entryPoints.mongodb]
+        address = ":27017"
+    [entryPoints.task-tracker]
+        address = ":3000"
+    [entryPoints.traefik]
+        address = ":8080"
+
+[accessLog]
+  filePath = "/var/log/traefik/access.log"
+  format = "json"
+  bufferingSize = 100
+  [accessLog.fields]
+      defaultMode = "keep"
+      [accessLog.fields.headers]
+        defaultMode = "keep"
+
+
+[providers]
+    docker=true
+
+[retry]
+    attempts = 3
+    maxMem = 3
+
+[docker]
+    endpoint = "unix:///var/run/docker.sock"
+    domain = "localhost"
+    swarmMode = true
+    watch = true
+    exposedbydefault = false

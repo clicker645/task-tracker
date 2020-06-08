@@ -1,0 +1,20 @@
+version: '3.3'
+services:
+  task-tracker:
+    build: "../"
+    env_file:
+      - .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.task-tracker.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.task-tracker.entrypoints=web"
+      - "traefik.http.services.task-tracker.loadbalancer.server.port=`${PORT}`"
+    expose:
+      - ${PORT}
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external:
+      name: traefik_webgateway

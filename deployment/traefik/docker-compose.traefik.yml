@@ -1,0 +1,25 @@
+version: '3.3'
+
+services:
+  traefik:
+    image: traefik:v2.2
+    container_name: "traefik"
+    networks:
+      - webgateway
+    ports:
+      - "80:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.routers.traefik.middlewares=traefik@docker"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.http.middlewares.traefik.basicauth.users=user:$$apr1$$sogxtAuF$$nOgsEiii1vE0.AqdA0eES."
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - ./traefik.toml:/traefik.toml
+      - ./logs:/var/log/traefik
+
+networks:
+  webgateway:
+    driver: bridge

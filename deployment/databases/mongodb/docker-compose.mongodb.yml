@@ -1,11 +1,22 @@
 version: '3.7'
 services:
-  db:
+  mongodb:
     image: mongo
-    container_name: db_mongo
+    container_name: "mongodb"
     volumes:
-      - mongodata:/data/db
+      - ./mongodata:/data/db
+    environment:
+      - MONGODB_DATABASE=${MONGODB_DATABASE}
     ports:
-      - "27017:27017"
+      - ${PORT}
+    labels:
+      - "traefik.enable=false"
+    networks:
+      - traefik
 volumes:
   mongodata:
+
+networks:
+  traefik:
+    external:
+      name: traefik_webgateway
