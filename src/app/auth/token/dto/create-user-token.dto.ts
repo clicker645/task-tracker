@@ -4,8 +4,10 @@ import * as mongoose from 'mongoose';
 export class CreateUserTokenDto {
   @IsString()
   token: string;
+
   @IsString()
-  uId: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
+
   @IsDateString()
   expireAt: string;
 }

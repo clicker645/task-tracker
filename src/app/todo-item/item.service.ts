@@ -3,12 +3,11 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
 } from '@nestjs/common';
 import { PaginateResult } from 'mongoose';
 import { IItem } from './interfaces/item.interface';
 import { CreateItemDto } from './dto/create-item.dto';
-import { PaginationOptions } from '../../infrastructure/databases/mongoose/paginate.params';
+import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
 import { ItemRepository } from './repositories/mongoose/item.repository';
 import { AuthService } from '../auth/auth.service';
 import { ShareService } from '../share/share.service';
@@ -87,7 +86,7 @@ export class ItemService {
     const currentItem = await this.itemRepository.findById(_id);
 
     if (
-      currentItem.uId.toString() === currentUser._id.toString() ||
+      currentItem.userId.toString() === currentUser._id.toString() ||
       (await this.shareService.checkPermission(
         currentUser._id,
         currentItem._id,
@@ -110,7 +109,7 @@ export class ItemService {
     }
 
     throw new ForbiddenException(
-      'Error: you dont have permissions for update this item.',
+      'Error: you dont have permissions for update this todo-item.',
     );
   }
 

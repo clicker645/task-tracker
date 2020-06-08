@@ -1,4 +1,4 @@
-import { BaseRepository } from '../../../../infrastructure/databases/mongoose/base.repository';
+import { BaseRepository } from '../../../../infrastructure/databases/mongoose/repository/base.repository';
 import { IUser } from '../../interfaces/user.interface';
 import { CreateUserDto } from '../../dto/create-user.dto';
 import { Injectable } from '@nestjs/common';

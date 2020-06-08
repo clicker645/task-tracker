@@ -6,7 +6,7 @@ export interface IDocumentHistory extends Document {
   target: string;
   from: string;
   to: string;
-  changeDate: Date;
+  createdAt: Date;
   document: string;
   modelName: string;
 }

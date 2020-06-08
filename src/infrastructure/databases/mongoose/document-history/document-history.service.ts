@@ -3,7 +3,7 @@ import { DocumentHistoryRepository } from './repositories/mongoose/document-hist
 import * as mongoose from 'mongoose';
 import { DocumentHistoryDto } from './dto/create-document-history.dto';
 import { Document, PaginateResult } from 'mongoose';
-import { PaginationOptions } from '../paginate.params';
+import { PaginationOptions } from '../pagination/paginate.params';
 import { IDocumentHistory } from './interfaces/document-history.interface';
 
 @Injectable()
@@ -14,20 +14,21 @@ export class DocumentHistoryService {
 
   async saveChangeHistory(
     model: string,
-    uId: string,
+    userId: string,
     oldItem: Document,
     newData: Record<string, any>,
   ) {
     for (const [key, value] of Object.entries(newData)) {
       const dto: DocumentHistoryDto = {
-        user: mongoose.Types.ObjectId(uId),
+        user: mongoose.Types.ObjectId(userId),
         target: key,
         from: oldItem[key],
         to: value,
-        changeDate: new Date(Date.now()),
         document: oldItem._id,
         modelName: model,
       };
+
+      console.log(dto);
 
       return await this.docHistoryRepository.create(dto);
     }

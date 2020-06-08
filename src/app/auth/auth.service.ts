@@ -41,7 +41,7 @@ export class AuthService {
       await this.tokenService.create({
         token,
         expireAt,
-        uId: user._id,
+        userId: user._id,
       });
 
       const readableUser = user.toObject() as IReadableUser;

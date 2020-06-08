@@ -7,19 +7,28 @@ import { ShareRepository } from './repositories/mongoose/share.repository';
 import { CreateShareItemDto } from './dto/create-share-item.dto';
 import { IShareItem } from './interfaces/share-item.interface';
 import { PaginateResult } from 'mongoose';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class ShareService {
-  constructor(private readonly shareRepository: ShareRepository) {}
+  constructor(
+    private readonly shareRepository: ShareRepository,
+    private readonly authService: AuthService,
+  ) {}
 
-  async create(createShareItemDto: CreateShareItemDto): Promise<IShareItem> {
+  async create(
+    token: string,
+    createShareItemDto: CreateShareItemDto,
+  ): Promise<IShareItem> {
     try {
+      const currentUser = await this.authService.getCurrentUser(token);
+      if (String(currentUser._id) === String(createShareItemDto.userId)) {
+        throw new BadRequestException("You can't share todo-item for yourself");
+      }
+
       return await this.shareRepository.create(createShareItemDto);
     } catch (e) {
-      throw new BadRequestException({
-        message: 'The item already shared to this user.',
-        reason: e,
-      });
+      throw new BadRequestException(e);
     }
   }
 
@@ -43,7 +52,7 @@ export class ShareService {
       itemId,
     });
 
-    if (shareItem.accessType !== access) {
+    if (!shareItem || shareItem.accessType !== access) {
       return false;
     }
 

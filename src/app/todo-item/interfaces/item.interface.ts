@@ -4,7 +4,8 @@ export interface IItem extends Document {
   readonly title: string;
   readonly description: string;
   readonly status: string;
-  readonly uId: string;
+  readonly userId: string;
   readonly createAt: Date;
-  readonly deadline: Date;
+  readonly expiresAt: Date;
+  readonly updatedAt: Date;
 }

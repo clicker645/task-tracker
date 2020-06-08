@@ -2,6 +2,7 @@ import { Document } from 'mongoose';
 
 export interface IUserToken extends Document {
   readonly token: string;
-  readonly uId: string;
+  readonly userId: string;
   readonly expireAt: string;
+  readonly createdAt: string;
 }

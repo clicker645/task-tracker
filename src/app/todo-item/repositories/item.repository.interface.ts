@@ -1,4 +1,4 @@
-import { PaginationOptions } from '../../../infrastructure/databases/mongoose/paginate.params';
+import { PaginationOptions } from '../../../infrastructure/databases/mongoose/pagination/paginate.params';
 import { IItem } from '../interfaces/item.interface';
 import { CreateItemDto } from '../dto/create-item.dto';
 import { IBaseRepository } from '../../../infrastructure/databases/base.repository.interface';

@@ -1,14 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { IUser } from './interfaces/user.interface';
-import { FilterQuery, PaginateResult } from 'mongoose';
+import { PaginateResult } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
-import { PaginationOptions } from '../../infrastructure/databases/mongoose/paginate.params';
+import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { TokenService } from '../auth/token/token.service';
 import { UserRepository } from './repositories/mongoose/user.repository';
 import { QueryUserDto } from './dto/query-user.dto';
-import { statusEnum } from './enums/status.enum';
 
 @Injectable()
 export class UserService {

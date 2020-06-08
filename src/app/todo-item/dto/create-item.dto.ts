@@ -18,9 +18,9 @@ export class CreateItemDto {
 
   @ApiProperty()
   @IsString()
-  uId: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
 
   @ApiProperty()
   @IsDateString()
-  deadline: Date;
+  expiresAt: Date;
 }

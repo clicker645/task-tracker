@@ -2,10 +2,10 @@ import { IHistoryRepository } from '../document-history.repository.interface';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginateModel, PaginateResult } from 'mongoose';
-import { BaseRepository } from '../../../base.repository';
+import { BaseRepository } from '../../../repository/base.repository';
 import { IDocumentHistory } from '../../interfaces/document-history.interface';
 import { DocumentHistoryDto } from '../../dto/create-document-history.dto';
-import { PaginationOptions } from '../../../paginate.params';
+import { PaginationOptions } from '../../../pagination/paginate.params';
 import { ModelsEnum } from '../../../../../../models/models.enum';
 
 @Injectable()

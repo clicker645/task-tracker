@@ -14,7 +14,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
-import { PaginationOptions } from '../../infrastructure/databases/mongoose/paginate.params';
+import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
 
 @ApiTags('user')
 @Controller('user')

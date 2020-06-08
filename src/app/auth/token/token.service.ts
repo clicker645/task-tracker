@@ -34,12 +34,12 @@ export class TokenService {
     }
   }
 
-  async deleteByUserId(uId: string): Promise<{ ok?: number; n?: number }> {
-    return await this.tokenRepository.deleteByUserId(uId);
+  async deleteByUserId(userId: string): Promise<{ ok?: number; n?: number }> {
+    return await this.tokenRepository.deleteByUserId(userId);
   }
 
-  async exists(uId: string, token: string): Promise<boolean> {
-    return await this.tokenRepository.exists(uId, token);
+  async exists(userId: string, token: string): Promise<boolean> {
+    return await this.tokenRepository.exists(userId, token);
   }
 
   public async verify(token): Promise<any> {
@@ -72,7 +72,7 @@ export class TokenService {
       'FE_APP_URL',
     )}/auth/confirm?token=${token}`;
 
-    await this.create({ token, uId: user._id, expireAt });
+    await this.create({ token, userId: user._id, expireAt });
     await this.mailService.send({
       from: this.configService.get<string>('ADMIN_MAIL'),
       to: user.email,

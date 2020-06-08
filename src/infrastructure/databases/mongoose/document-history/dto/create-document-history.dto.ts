@@ -5,7 +5,6 @@ export class DocumentHistoryDto {
   target: string;
   from: string;
   to: string;
-  changeDate: Date;
   document: mongoose.Types.ObjectId;
   modelName: string;
 }

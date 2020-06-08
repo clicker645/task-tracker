@@ -1,4 +1,4 @@
-import { BaseRepository } from '../../../../infrastructure/databases/mongoose/base.repository';
+import { BaseRepository } from '../../../../infrastructure/databases/mongoose/repository/base.repository';
 import { IShareItem } from '../../interfaces/share-item.interface';
 import { CreateShareItemDto } from '../../dto/create-share-item.dto';
 import { InjectModel } from '@nestjs/mongoose';

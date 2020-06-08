@@ -4,6 +4,6 @@ import { IBaseRepository } from '../../../../infrastructure/databases/base.repos
 
 export interface ITokenRepository
   extends IBaseRepository<IUserToken, CreateUserTokenDto> {
-  deleteByUserId(uId: string): Promise<{ ok?: number; n?: number }>;
-  exists(uId: string, token: string): Promise<boolean>;
+  deleteByUserId(userId: string): Promise<{ ok?: number; n?: number }>;
+  exists(userId: string, token: string): Promise<boolean>;
 }

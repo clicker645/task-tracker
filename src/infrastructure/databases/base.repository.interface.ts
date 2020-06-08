@@ -1,5 +1,5 @@
 import { FilterQuery, PaginateResult } from 'mongoose';
-import { PaginationOptions } from './mongoose/paginate.params';
+import { PaginationOptions } from './mongoose/pagination/paginate.params';
 
 export interface IBaseRepository<T, R> {
   findById(id: string): Promise<T>;

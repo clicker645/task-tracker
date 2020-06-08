@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   Param,
   Post,
   ValidationPipe,
@@ -16,8 +17,11 @@ export class ShareController {
   constructor(private readonly shareService: ShareService) {}
 
   @Post('/')
-  async create(@Body(new ValidationPipe()) body: CreateShareItemDto) {
-    return this.shareService.create(body);
+  async create(
+    @Headers('authorization') token: string,
+    @Body(new ValidationPipe()) body: CreateShareItemDto,
+  ) {
+    return this.shareService.create(token, body);
   }
 
   @Get('/:user_id')

@@ -9,9 +9,9 @@ import {
   Query,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { ItemService } from './item.service';
-import { PaginationOptions } from '../../infrastructure/databases/mongoose/paginate.params';
+import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 
