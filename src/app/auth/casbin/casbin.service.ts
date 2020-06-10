@@ -6,7 +6,6 @@ import { join } from 'path';
 export class CasbinService {
   private enforcer: Enforcer;
 
-  // TODO Migrate RBAC_POLICY to mongodb use mongoose
   constructor() {
     newEnforcer(
       join(__dirname, '../../../../rbac_model.conf'),

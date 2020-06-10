@@ -1,10 +1,15 @@
-import { Injectable, BadRequestException, HttpException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  HttpException,
+  NotFoundException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 
 import { UserService } from 'src/app/user/user.service';
-import { TokenService } from 'src/app/auth/token/token.service';
+import { ActionType, TokenService } from 'src/app/auth/token/token.service';
 import { IUser } from 'src/app/user/interfaces/user.interface';
 import { statusEnum } from 'src/app/user/enums/status.enum';
 import { SignInDto } from './dto/signin.dto';
@@ -53,8 +58,8 @@ export class AuthService {
       ) as IReadableUser;
     }
 
-    throw new BadRequestException(
-      'User with specified username/passwordnot found',
+    throw new NotFoundException(
+      'User with specified username/password not found',
     );
   }
 
@@ -76,11 +81,22 @@ export class AuthService {
     throw new BadRequestException('Confirmation error');
   }
 
-  async getCurrentUser(token): Promise<ITokenPayload> {
+  async getCurrentUser(token: string): Promise<ITokenPayload> {
     if (token) {
       return this.tokenService.getUserDataFromToken(token);
     }
 
     throw new Error("Error: user doesn't have access token.");
+  }
+
+  async sendResetLink(email: string): Promise<boolean> {
+    const user = await this.userService.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException({
+        message: 'User not found',
+      });
+    }
+
+    return this.tokenService.sendLink(user, ActionType.Reset);
   }
 }

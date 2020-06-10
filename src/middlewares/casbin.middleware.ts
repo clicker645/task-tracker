@@ -16,7 +16,6 @@ export class CasbinRBACMiddleware implements NestMiddleware {
   ) {}
 
   async use(req, res, next: Function) {
-    next();
     const token = req.headers.authorization;
     if (token) {
       const data = (await this.tokenService.verify(token)) as ITokenPayload;

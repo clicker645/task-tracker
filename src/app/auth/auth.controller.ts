@@ -36,4 +36,9 @@ export class AuthController {
   async logout(@Query('token') token: string) {
     return await this.authService.logout(token);
   }
+
+  @Post('/reset')
+  async sendResetLink(@Query('email') email: string) {
+    return this.authService.sendResetLink(email);
+  }
 }

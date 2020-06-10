@@ -6,6 +6,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { TokenRepository } from './repositories/mongoose/token.repository';
 import { MailModule } from '../../../infrastructure/mail/mail.module';
 import { ModelsEnum } from '../../../models/models.enum';
+import { RedisModule } from '../../../infrastructure/databases/redis/redis.module';
+import { RedisService } from '../../../infrastructure/databases/redis/redis.service';
 
 @Module({
   imports: [
@@ -17,8 +19,9 @@ import { ModelsEnum } from '../../../models/models.enum';
       signOptions: { expiresIn: '1d' },
     }),
     MailModule,
+    RedisModule,
   ],
-  providers: [TokenService, TokenRepository],
+  providers: [TokenService, TokenRepository, RedisService],
   exports: [TokenService],
 })
 export class TokenModule {}
