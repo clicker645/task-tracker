@@ -1,11 +1,9 @@
-import { IsString, Matches, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, Matches } from 'class-validator';
 
-export class ChangePasswordDto {
+export class ResetPasswordDto {
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  _id: string;
+  token: string;
 
   @IsString()
   @IsNotEmpty()
@@ -14,8 +12,5 @@ export class ChangePasswordDto {
     { message: 'Weak password' },
   )
   @ApiProperty()
-  readonly newPassword: string;
-
-  @ApiProperty()
-  readonly oldPassword?: string;
+  readonly password: string;
 }

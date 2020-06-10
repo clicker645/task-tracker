@@ -5,9 +5,10 @@ import { PaginateResult } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { TokenService } from '../auth/token/token.service';
+import { ActionType, TokenService } from '../auth/token/token.service';
 import { UserRepository } from './repositories/mongoose/user.repository';
 import { QueryUserDto } from './dto/query-user.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class UserService {
@@ -22,11 +23,31 @@ export class UserService {
     return await bcrypt.hash(password, await bcrypt.genSalt(this.saltRounds));
   }
 
-  async changePassword(changePasswordDto: ChangePasswordDto): Promise<boolean> {
-    const password = await this.hashPassword(changePasswordDto.password);
+  async changePassword(payload: ChangePasswordDto): Promise<boolean> {
+    const user = await this.userRepository.findById(payload._id);
+    bcrypt.compare(payload.oldPassword, user.password, (e, ok) => {
+      if (!ok) {
+        throw new BadRequestException({
+          message: 'Your old password is incorrect',
+        });
+      }
+    });
 
-    await this.userRepository.update(changePasswordDto._id, { password });
-    await this.tokenService.deleteByUserId(changePasswordDto._id);
+    const newPassword = await this.hashPassword(payload.newPassword);
+    await this.userRepository.update(payload._id, {
+      password: newPassword,
+    });
+
+    return true;
+  }
+
+  async resetPassword(payload: ResetPasswordDto): Promise<boolean> {
+    const jwtToken = await this.tokenService.verify(payload.token);
+    const newPassword = await this.hashPassword(payload.password);
+    await this.userRepository.update(jwtToken._id, {
+      password: newPassword,
+    });
+
     return true;
   }
 
@@ -34,7 +55,7 @@ export class UserService {
     try {
       createUserDto.password = await this.hashPassword(createUserDto.password);
       const user = await this.userRepository.create(createUserDto);
-      await this.tokenService.sendConfirmation(user);
+      await this.tokenService.sendLink(user, ActionType.Confirm);
       return;
     } catch (e) {
       throw new BadRequestException({
