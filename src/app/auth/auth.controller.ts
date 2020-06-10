@@ -10,7 +10,6 @@ import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import { ConfirmAccountDto } from './dto/confirm-account.dto';
 import { SignInDto } from './dto/signin.dto';
-import { IReadableUser } from 'src/app/user/interfaces/readable-user.interface';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -26,9 +25,7 @@ export class AuthController {
   }
 
   @Post('/login')
-  async login(
-    @Body(new ValidationPipe()) signInDto: SignInDto,
-  ): Promise<IReadableUser> {
+  async login(@Body(new ValidationPipe()) signInDto: SignInDto) {
     return await this.authService.login(signInDto);
   }
 

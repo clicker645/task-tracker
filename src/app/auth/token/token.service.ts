@@ -1,13 +1,8 @@
 import {
   Injectable,
   InternalServerErrorException,
-  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { IUserToken } from './interfaces/user-token.interface';
-import { CreateUserTokenDto } from './dto/create-user-token.dto';
-import { ITokenPayload } from '../interfaces/token-payload.interface';
-import { SignOptions } from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from '../../user/interfaces/user.interface';
 import * as moment from 'moment';
@@ -16,6 +11,9 @@ import { MailService } from '../../../infrastructure/mail/mail.service';
 import { RedisService } from '../../../infrastructure/databases/redis/redis.service';
 import { ResetPasswordTemplate } from '../../../infrastructure/mail/templates/reset-password.template';
 import { ConfirmTemplate } from '../../../infrastructure/mail/templates/confirm.template';
+import { CreateTokenDto } from './dto/create.token.dto';
+import { IToken } from './interfaces/token.interface';
+import { ITokenPayload } from './interfaces/token-payload.interface';
 
 export const ActionType = {
   Reset: <Action>{
@@ -45,25 +43,21 @@ export class TokenService {
     private readonly redisService: RedisService,
   ) {}
 
-  async create(createUserTokenDto: CreateUserTokenDto): Promise<IUserToken> {
-    const ok = await this.redisService.set(
-      createUserTokenDto.userId.toString(),
-      createUserTokenDto,
-      this.configService.get<number>('JWT_TOKEN_LIFETIME'),
-    );
+  async create(dto: CreateTokenDto): Promise<IToken> {
+    const token = this.jwtService.sign(dto);
 
-    if (ok) {
-      return <IUserToken>{
-        token: createUserTokenDto.token,
-        userId: createUserTokenDto.userId.toString(),
-        expireAt: createUserTokenDto.expireAt,
-        createdAt: Date.now().toString(),
+    const expiresIn = this.configService.get<number>('JWT_TOKEN_LIFETIME');
+    const expiresAt = moment()
+      .add(expiresIn, 'seconds')
+      .toISOString();
+
+    if (await this.redisService.set(dto._id, token, expiresIn)) {
+      return <IToken>{
+        jwt: token,
+        expiresAt: expiresAt,
+        expiresIn: expiresIn,
       };
     }
-  }
-
-  async generate(data: ITokenPayload, options?: SignOptions): Promise<string> {
-    return this.jwtService.sign(data, options);
   }
 
   async getUserDataFromToken(token: string): Promise<ITokenPayload> {
@@ -74,26 +68,24 @@ export class TokenService {
     }
   }
 
-  async deleteByUserId(userId: string): Promise<{ ok?: number; n?: number }> {
+  async deleteByUserId(userId: string): Promise<boolean> {
     try {
       if (await this.redisService.delete(userId)) {
-        return {
-          ok: 1,
-        };
+        return true;
       }
     } catch (e) {
       throw new InternalServerErrorException(e);
     }
   }
 
-  async exists(userId: string, token: string): Promise<boolean> {
+  async exists(userId: string): Promise<boolean> {
     return await this.redisService.exist(userId);
   }
 
   public async verify(token: string): Promise<ITokenPayload> {
     try {
       const data = this.jwtService.verify(token) as ITokenPayload;
-      const tokenExists = await this.exists(data._id, token);
+      const tokenExists = await this.exists(data._id);
 
       if (tokenExists) {
         return data;
@@ -105,23 +97,16 @@ export class TokenService {
   }
 
   async sendLink(user: IUser, action: Action): Promise<boolean> {
-    const tokenPayload = {
+    const token = await this.create(<CreateTokenDto>{
       _id: user._id,
-      status: user.status,
       role: user.role,
-    };
-    const expireAt = moment()
-      .add(this.configService.get<number>('JWT_TOKEN_LIFETIME'), 'seconds')
-      .toISOString();
-
-    const token = await this.generate(tokenPayload, {
-      expiresIn: this.configService.get<number>('JWT_TOKEN_LIFETIME'),
+      status: user.status,
     });
+
     const confirmLink = `${this.configService.get<string>('FE_APP_URL')}${
       action.path
-    }${token}`;
+    }${token.jwt}`;
 
-    await this.create({ token, userId: user._id, expireAt });
     await this.mailService.send({
       from: this.configService.get<string>('ADMIN_MAIL'),
       to: user.email,

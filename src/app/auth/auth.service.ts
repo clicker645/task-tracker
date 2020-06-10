@@ -5,17 +5,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import * as _ from 'lodash';
-import * as moment from 'moment';
 
 import { UserService } from 'src/app/user/user.service';
 import { ActionType, TokenService } from 'src/app/auth/token/token.service';
 import { IUser } from 'src/app/user/interfaces/user.interface';
 import { statusEnum } from 'src/app/user/enums/status.enum';
 import { SignInDto } from './dto/signin.dto';
-import { ITokenPayload } from './interfaces/token-payload.interface';
-import { IReadableUser } from 'src/app/user/interfaces/readable-user.interface';
-import { userSensitiveFieldsEnum } from 'src/app/user/enums/protected-fields.enum';
+import { CreateTokenDto } from './token/dto/create.token.dto';
+import { ILoginResponse } from './interfaces/login-response.interface';
+import { ITokenPayload } from './token/interfaces/token-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -25,37 +23,24 @@ export class AuthService {
   ) {}
 
   // TODO Migrate storage for token in redis
-  async login({ email, password }: SignInDto): Promise<IReadableUser> {
+  async login({ email, password }: SignInDto): Promise<ILoginResponse> {
     const user = await this.userService.findByEmail(email);
 
     if (user && (await bcrypt.compare(password, user.password))) {
       if (user.status !== statusEnum.active) {
         throw new HttpException('Account not verified', 405);
       }
-      const tokenPayload: ITokenPayload = {
-        _id: user._id,
-        status: user.status,
-        role: user.role,
-      };
 
-      const token = await this.tokenService.generate(tokenPayload);
-      const expireAt = moment()
-        .add(1, 'day')
-        .toISOString();
-
-      await this.tokenService.create({
-        token,
-        expireAt,
+      return <ILoginResponse>{
         userId: user._id,
-      });
-
-      const readableUser = user.toObject() as IReadableUser;
-      readableUser.accessToken = token;
-
-      return _.omit<any>(
-        readableUser,
-        Object.values(userSensitiveFieldsEnum),
-      ) as IReadableUser;
+        role: user.role,
+        status: user.status,
+        token: await this.tokenService.create(<CreateTokenDto>{
+          _id: user._id,
+          role: user.role,
+          status: user.status,
+        }),
+      };
     }
 
     throw new NotFoundException(
@@ -63,7 +48,7 @@ export class AuthService {
     );
   }
 
-  async logout(token: string): Promise<{ ok?: number; n?: number }> {
+  async logout(token: string): Promise<boolean> {
     const data = (await this.tokenService.verify(token)) as ITokenPayload;
     return this.tokenService.deleteByUserId(data._id);
   }

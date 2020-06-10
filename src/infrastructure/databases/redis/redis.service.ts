@@ -14,11 +14,17 @@ export class RedisService {
   }
 
   async set(key: string, value: any, duration: number): Promise<boolean> {
-    return this.client.set(key, JSON.stringify(value), 'EX', duration, e => {
-      if (e) {
-        throw new Error(e.toString());
-      }
-    });
+    return this.client.set(
+      key.toString(),
+      JSON.stringify(value),
+      'EX',
+      duration,
+      e => {
+        if (e) {
+          throw new Error(e.toString());
+        }
+      },
+    );
   }
 
   async exist(key: string): Promise<boolean> {

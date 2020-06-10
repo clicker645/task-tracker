@@ -4,9 +4,9 @@ import {
   NestMiddleware,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ITokenPayload } from '../app/auth/interfaces/token-payload.interface';
 import { CasbinService } from '../app/auth/casbin/casbin.service';
 import { TokenService } from '../app/auth/token/token.service';
+import { ITokenPayload } from '../app/auth/token/interfaces/token-payload.interface';
 
 @Injectable()
 export class CasbinRBACMiddleware implements NestMiddleware {
