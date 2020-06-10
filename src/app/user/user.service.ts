@@ -9,6 +9,7 @@ import { ActionType, TokenService } from '../auth/token/token.service';
 import { UserRepository } from './repositories/mongoose/user.repository';
 import { QueryUserDto } from './dto/query-user.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { dictionary } from '../../config/dictionary';
 
 @Injectable()
 export class UserService {
@@ -28,7 +29,7 @@ export class UserService {
     bcrypt.compare(payload.oldPassword, user.password, (e, ok) => {
       if (!ok) {
         throw new BadRequestException({
-          message: 'Your old password is incorrect',
+          message: dictionary.errors.oldPassIncorrect,
         });
       }
     });
@@ -51,15 +52,16 @@ export class UserService {
     return true;
   }
 
-  async create(createUserDto: CreateUserDto): Promise<IUser> {
+  async create(createUserDto: CreateUserDto): Promise<any> {
     try {
       createUserDto.password = await this.hashPassword(createUserDto.password);
       const user = await this.userRepository.create(createUserDto);
       await this.tokenService.sendLink(user, ActionType.Confirm);
-      return;
+
+      return { message: dictionary.notifications.successfullyUserCreate };
     } catch (e) {
       throw new BadRequestException({
-        message: 'This email already used',
+        message: dictionary.errors.emailAlreadyExist,
         reason: e,
       });
     }

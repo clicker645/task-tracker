@@ -14,6 +14,7 @@ import { SignInDto } from './dto/signin.dto';
 import { CreateTokenDto } from './token/dto/create.token.dto';
 import { ILoginResponse } from './interfaces/login-response.interface';
 import { ITokenPayload } from './token/interfaces/token-payload.interface';
+import { dictionary } from 'src/config/dictionary';
 
 @Injectable()
 export class AuthService {
@@ -22,13 +23,12 @@ export class AuthService {
     private readonly tokenService: TokenService,
   ) {}
 
-  // TODO Migrate storage for token in redis
   async login({ email, password }: SignInDto): Promise<ILoginResponse> {
     const user = await this.userService.findByEmail(email);
 
     if (user && (await bcrypt.compare(password, user.password))) {
       if (user.status !== statusEnum.active) {
-        throw new HttpException('Account not verified', 405);
+        throw new HttpException(dictionary.errors.verifiedError, 405);
       }
 
       return <ILoginResponse>{
@@ -43,9 +43,9 @@ export class AuthService {
       };
     }
 
-    throw new NotFoundException(
-      'User with specified username/password not found',
-    );
+    throw new NotFoundException({
+      message: dictionary.errors.credentialsError,
+    });
   }
 
   async logout(token: string): Promise<boolean> {
@@ -63,7 +63,10 @@ export class AuthService {
       user.status = statusEnum.active;
       return user.save();
     }
-    throw new BadRequestException('Confirmation error');
+
+    throw new BadRequestException({
+      message: dictionary.errors.confirmError,
+    });
   }
 
   async getCurrentUser(token: string): Promise<ITokenPayload> {
@@ -71,14 +74,14 @@ export class AuthService {
       return this.tokenService.getUserDataFromToken(token);
     }
 
-    throw new Error("Error: user doesn't have access token.");
+    throw new Error(dictionary.errors.tokenDoesntExist);
   }
 
   async sendResetLink(email: string): Promise<boolean> {
     const user = await this.userService.findByEmail(email);
     if (!user) {
       throw new NotFoundException({
-        message: 'User not found',
+        message: dictionary.errors.userNotFound,
       });
     }
 

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -14,11 +15,12 @@ import { ConfirmTemplate } from '../../../infrastructure/mail/templates/confirm.
 import { CreateTokenDto } from './dto/create.token.dto';
 import { IToken } from './interfaces/token.interface';
 import { ITokenPayload } from './interfaces/token-payload.interface';
+import { dictionary } from '../../../config/dictionary';
 
 export const ActionType = {
   Reset: <Action>{
     subject: 'Reset Password',
-    path: '/auth/reset?token=',
+    path: `${process.env.PATH_TO_RESET_PASS_PAGE}?token=`,
     html: ResetPasswordTemplate,
   },
   Confirm: <Action>{
@@ -64,7 +66,7 @@ export class TokenService {
     try {
       return (await this.jwtService.verify(token)) as ITokenPayload;
     } catch (e) {
-      throw new Error('Error: wrong access token');
+      throw new Error(dictionary.errors.tokenError);
     }
   }
 
@@ -87,10 +89,13 @@ export class TokenService {
       const data = this.jwtService.verify(token) as ITokenPayload;
       const tokenExists = await this.exists(data._id);
 
-      if (tokenExists) {
-        return data;
+      if (!tokenExists) {
+        throw new BadRequestException({
+          message: dictionary.errors.tokenExpired,
+        });
       }
-      throw new UnauthorizedException();
+
+      return data;
     } catch (error) {
       throw new UnauthorizedException();
     }

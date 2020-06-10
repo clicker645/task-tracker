@@ -15,6 +15,7 @@ import { AccessType } from '../share/enums/access-type.enum';
 import { DocumentHistoryService } from '../../infrastructure/databases/mongoose/document-history/document-history.service';
 import { ModelsEnum } from '../../models/models.enum';
 import { IDocumentHistory } from '../../infrastructure/databases/mongoose/document-history/interfaces/document-history.interface';
+import { dictionary } from '../../config/dictionary';
 @Injectable()
 export class ItemService {
   constructor(
@@ -71,7 +72,7 @@ export class ItemService {
       const currentUser = await this.authService.getCurrentUser(token);
       if (userId !== currentUser._id) {
         throw new ForbiddenException(
-          "Error: you can't get items from another users",
+          dictionary.errors.gettingItemsAnotherUserError,
         );
       }
 
@@ -108,9 +109,7 @@ export class ItemService {
       }
     }
 
-    throw new ForbiddenException(
-      'Error: you dont have permissions for update this todo-item.',
-    );
+    throw new ForbiddenException(dictionary.errors.permissionsForUpdateError);
   }
 
   async delete(_id: string): Promise<any> {

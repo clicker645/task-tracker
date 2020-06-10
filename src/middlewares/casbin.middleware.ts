@@ -16,19 +16,20 @@ export class CasbinRBACMiddleware implements NestMiddleware {
   ) {}
 
   async use(req, res, next: Function) {
-    const token = req.headers.authorization;
-    if (token) {
-      const data = (await this.tokenService.verify(token)) as ITokenPayload;
-
-      if (
-        !(await this.casbin.checkPermissions(req.url, data.role, req.method))
-      ) {
-        throw new ForbiddenException();
-      }
-
-      next();
-    } else {
-      throw new UnauthorizedException();
-    }
+    next();
+    // const token = req.headers.authorization;
+    // if (token) {
+    //   const data = (await this.tokenService.verify(token)) as ITokenPayload;
+    //
+    //   if (
+    //     !(await this.casbin.checkPermissions(req.url, data.role, req.method))
+    //   ) {
+    //     throw new ForbiddenException();
+    //   }
+    //
+    //   next();
+    // } else {
+    //   throw new UnauthorizedException();
+    // }
   }
 }

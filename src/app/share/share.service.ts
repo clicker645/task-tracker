@@ -8,6 +8,7 @@ import { CreateShareItemDto } from './dto/create-share-item.dto';
 import { IShareItem } from './interfaces/share-item.interface';
 import { PaginateResult } from 'mongoose';
 import { AuthService } from '../auth/auth.service';
+import { dictionary } from '../../config/dictionary';
 
 @Injectable()
 export class ShareService {
@@ -23,7 +24,9 @@ export class ShareService {
     try {
       const currentUser = await this.authService.getCurrentUser(token);
       if (String(currentUser._id) === String(createShareItemDto.userId)) {
-        throw new BadRequestException("You can't share todo-item for yourself");
+        throw new BadRequestException({
+          message: dictionary.errors.shareYourselfError,
+        });
       }
 
       return await this.shareRepository.create(createShareItemDto);
