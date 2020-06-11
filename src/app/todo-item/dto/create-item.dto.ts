@@ -1,6 +1,6 @@
 import { statusEnum } from '../enums/status.enum';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
 import * as mongoose from 'mongoose';
 
 export class CreateItemDto {
@@ -17,8 +17,9 @@ export class CreateItemDto {
   status: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsString()
-  userId: mongoose.Types.ObjectId;
+  userId?: mongoose.Types.ObjectId;
 
   @ApiProperty()
   @IsDateString()

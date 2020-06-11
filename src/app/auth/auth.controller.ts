@@ -5,11 +5,13 @@ import {
   ValidationPipe,
   Get,
   Query,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ConfirmAccountDto } from './dto/confirm-account.dto';
 import { SignInDto } from './dto/signin.dto';
+import { Request } from 'express';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -29,9 +31,10 @@ export class AuthController {
     return await this.authService.login(signInDto);
   }
 
+  @ApiBearerAuth()
   @Post('/logout')
-  async logout(@Query('token') token: string) {
-    return await this.authService.logout(token);
+  async logout(@Req() req: Request) {
+    return await this.authService.logout(req);
   }
 
   @Post('/reset')

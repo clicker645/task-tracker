@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { IUser } from './interfaces/user.interface';
 import { PaginateResult } from 'mongoose';
@@ -9,6 +13,7 @@ import { ActionType, TokenService } from '../auth/token/token.service';
 import { UserRepository } from './repositories/mongoose/user.repository';
 import { QueryUserDto } from './dto/query-user.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { Request } from 'express';
 import { dictionary } from '../../config/dictionary';
 
 @Injectable()
@@ -25,17 +30,13 @@ export class UserService {
   }
 
   async changePassword(payload: ChangePasswordDto): Promise<boolean> {
-    const user = await this.userRepository.findById(payload._id);
-    bcrypt.compare(payload.oldPassword, user.password, (e, ok) => {
-      if (!ok) {
-        throw new BadRequestException({
-          message: dictionary.errors.oldPassIncorrect,
-        });
-      }
-    });
+    const user = await this.findById(payload._id);
+    if (!(await bcrypt.compare(payload.oldPassword, user.password))) {
+      throw new BadRequestException(dictionary.errors.oldPassIncorrect);
+    }
 
     const newPassword = await this.hashPassword(payload.newPassword);
-    await this.userRepository.update(payload._id, {
+    await this.update(payload._id, {
       password: newPassword,
     });
 
@@ -62,25 +63,47 @@ export class UserService {
     } catch (e) {
       throw new BadRequestException({
         message: dictionary.errors.emailAlreadyExist,
-        reason: e,
       });
     }
   }
 
+  async getCurrent(req: Request): Promise<IUser> {
+    const currentUser = await this.tokenService.verify(
+      req.headers.authorization,
+    );
+    return this.userRepository.findById(currentUser._id);
+  }
+
   async findById(id: string): Promise<IUser> {
-    return await this.userRepository.findById(id);
+    try {
+      return await this.userRepository.findById(id);
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
   }
 
   async findByEmail(email: string): Promise<IUser> {
-    return await this.userRepository.findByEmail(email);
+    try {
+      return await this.userRepository.findByEmail(email);
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
   }
 
   async update(_id: string, payload: Partial<IUser>) {
-    return await this.userRepository.update(_id, payload);
+    try {
+      return await this.userRepository.update(_id, payload);
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
   }
 
   async delete(_id: string): Promise<any> {
-    return await this.userRepository.delete(_id);
+    try {
+      return await this.userRepository.delete(_id);
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
   }
 
   async search(
@@ -102,6 +125,10 @@ export class UserService {
     queryParams: QueryUserDto,
     options: PaginationOptions,
   ): Promise<PaginateResult<IUser>> {
-    return await this.userRepository.findAll(queryParams, options);
+    try {
+      return await this.userRepository.findAll(queryParams, options);
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
   }
 }

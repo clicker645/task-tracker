@@ -8,27 +8,47 @@ import {
   Post,
   Put,
   Query,
+  Req,
   ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { Request } from 'express';
+import { IUser } from './interfaces/user.interface';
 
 @ApiTags('user')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @ApiBearerAuth()
+  @Get('/current/')
+  async getCurrent(@Req() req: Request): Promise<IUser> {
+    return this.userService.getCurrent(req);
+  }
+
+  @ApiBearerAuth()
+  @Get('/search/:data')
+  async search(
+    @Param('data') data: string,
+    @Query(new ValidationPipe()) pagination: PaginationOptions,
+  ) {
+    return this.userService.search(data, pagination);
+  }
+
+  @ApiBearerAuth()
   @Get('/:id')
   async getOne(@Param('id') id: string) {
     return this.userService.findById(id);
   }
 
+  @ApiBearerAuth()
   @Get('/')
   async getAll(
     @Query() query: QueryUserDto,
@@ -40,11 +60,13 @@ export class UserController {
     );
   }
 
+  @ApiBearerAuth()
   @Delete('/:id')
   async delete(@Param('id') id: string) {
     return this.userService.delete(id);
   }
 
+  @ApiBearerAuth()
   @Patch('/:id')
   async update(
     @Param('id') id: string,
@@ -53,6 +75,7 @@ export class UserController {
     return this.userService.update(id, payload);
   }
 
+  @ApiBearerAuth()
   @Put('/password')
   async changePassword(@Body(new ValidationPipe()) payload: ChangePasswordDto) {
     return this.userService.changePassword(payload);
@@ -63,16 +86,9 @@ export class UserController {
     return this.userService.resetPassword(payload);
   }
 
+  @ApiBearerAuth()
   @Post('/')
   async create(@Body(new ValidationPipe()) user: CreateUserDto) {
     return this.userService.create(user);
-  }
-
-  @Get('/search/:data')
-  async search(
-    @Param('data') data: string,
-    @Query(new ValidationPipe()) pagination: PaginationOptions,
-  ) {
-    return this.userService.search(data, pagination);
   }
 }

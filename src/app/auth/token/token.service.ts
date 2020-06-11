@@ -16,18 +16,19 @@ import { CreateTokenDto } from './dto/create.token.dto';
 import { IToken } from './interfaces/token.interface';
 import { ITokenPayload } from './interfaces/token-payload.interface';
 import { dictionary } from '../../../config/dictionary';
+import { trimPrefix } from '../../../common/trim-prefix';
 
 export const ActionType = {
-  Reset: <Action>{
+  Reset: {
     subject: 'Reset Password',
     path: `${process.env.PATH_TO_RESET_PASS_PAGE}?token=`,
     html: ResetPasswordTemplate,
-  },
-  Confirm: <Action>{
+  } as Action,
+  Confirm: {
     subject: 'Verify User',
     path: '/auth/confirm?token=',
     html: ConfirmTemplate,
-  },
+  } as Action,
 };
 
 declare type Action = {
@@ -35,6 +36,8 @@ declare type Action = {
   path: string;
   html: (login: string, confirmLink: string) => string;
 };
+
+const bearerPrefix = 'Bearer ';
 
 @Injectable()
 export class TokenService {
@@ -54,19 +57,11 @@ export class TokenService {
       .toISOString();
 
     if (await this.redisService.set(dto._id, token, expiresIn)) {
-      return <IToken>{
+      return {
         jwt: token,
         expiresAt: expiresAt,
         expiresIn: expiresIn,
-      };
-    }
-  }
-
-  async getUserDataFromToken(token: string): Promise<ITokenPayload> {
-    try {
-      return (await this.jwtService.verify(token)) as ITokenPayload;
-    } catch (e) {
-      throw new Error(dictionary.errors.tokenError);
+      } as IToken;
     }
   }
 
@@ -84,9 +79,10 @@ export class TokenService {
     return await this.redisService.exist(userId);
   }
 
-  public async verify(token: string): Promise<ITokenPayload> {
+  async verify(bearerToken: string): Promise<ITokenPayload> {
     try {
-      const data = this.jwtService.verify(token) as ITokenPayload;
+      const token = trimPrefix(bearerToken, bearerPrefix);
+      const data = (await this.jwtService.verify(token)) as ITokenPayload;
       const tokenExists = await this.exists(data._id);
 
       if (!tokenExists) {
@@ -102,11 +98,11 @@ export class TokenService {
   }
 
   async sendLink(user: IUser, action: Action): Promise<boolean> {
-    const token = await this.create(<CreateTokenDto>{
+    const token = await this.create({
       _id: user._id,
       role: user.role,
       status: user.status,
-    });
+    } as CreateTokenDto);
 
     const confirmLink = `${this.configService.get<string>('FE_APP_URL')}${
       action.path

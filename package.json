@@ -41,6 +41,7 @@
     "casbin-mongoose-adapter": "^2.1.0",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.12.2",
+    "express": "^4.17.1",
     "mailgun-js": "^0.22.0",
     "moment": "^2.26.0",
     "mongoose": "^5.9.16",

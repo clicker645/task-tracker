@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './app/user/user.module';
 import { AuthModule } from './app/auth/auth.module';
@@ -10,6 +15,8 @@ import { CasbinModule } from './app/auth/casbin/casbin.module';
 import { UserController } from './app/user/user.controller';
 import { ShareModule } from './app/share/share.module';
 import { DocumentHistoryModule } from './infrastructure/databases/mongoose/document-history/document-history.module';
+import { ItemController } from './app/todo-item/item.controller';
+import { ShareController } from './app/share/share.controller';
 
 @Module({
   imports: [
@@ -30,6 +37,15 @@ import { DocumentHistoryModule } from './infrastructure/databases/mongoose/docum
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
-    consumer.apply(CasbinRBACMiddleware).forRoutes(UserController);
+    consumer
+      .apply(CasbinRBACMiddleware)
+      .exclude({
+        path: '/user/password/reset',
+        method: RequestMethod.POST,
+      })
+      .forRoutes(UserController, ItemController, ShareController, {
+        path: '/auth/logout',
+        method: RequestMethod.POST,
+      });
   }
 }

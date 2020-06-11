@@ -1,54 +1,59 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
-  Headers,
   Param,
   Patch,
   Post,
   Query,
+  Req,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ItemService } from './item.service';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { Request } from 'express';
 
+@ApiBearerAuth()
 @ApiTags('item')
 @Controller('item')
 export class ItemController {
   constructor(private readonly itemService: ItemService) {}
 
-  @Get('/:user_id')
-  async getByUser(
-    @Headers('authorization') token: string,
-    @Param('user_id') userId: string,
+  @Get('/')
+  async get(
+    @Req() req: Request,
     @Query(new ValidationPipe()) pagination: PaginationOptions,
   ) {
-    return this.itemService.getByUser(token, userId, pagination);
+    return this.itemService.getByUser(req, pagination);
   }
 
   @Post('/')
-  async create(@Body(new ValidationPipe()) data: CreateItemDto) {
-    return this.itemService.create(data);
+  async create(
+    @Req() req: Request,
+    @Body(new ValidationPipe()) data: CreateItemDto,
+  ) {
+    return this.itemService.create(req, data);
   }
 
   @Patch('/:id')
   async update(
-    @Headers('authorization') token: string,
+    @Req() req: Request,
     @Param('id') id: string,
     @Body(new ValidationPipe()) data: UpdateItemDto,
   ) {
-    return this.itemService.update(token, id, data);
+    return this.itemService.update(req, id, data);
   }
 
-  @Get('/shared/:user_id')
+  @Get('/shared')
   async getSharedItems(
-    @Param('user_id') userId: string,
+    @Req() req: Request,
     @Query() pagination: PaginationOptions,
   ) {
-    return this.itemService.getSharedItems(userId, pagination);
+    return this.itemService.getSharedItems(req, pagination);
   }
 
   @Get('/history/:id')
@@ -57,5 +62,10 @@ export class ItemController {
     @Query() pagination: PaginationOptions,
   ) {
     return this.itemService.getHistoryBy(id, pagination);
+  }
+
+  @Delete('/:id')
+  delete(@Req() req: Request, @Param('id') id: string) {
+    return this.itemService.delete(req, id);
   }
 }

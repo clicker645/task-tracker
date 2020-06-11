@@ -2,15 +2,18 @@ import {
   Body,
   Controller,
   Get,
-  Headers,
-  Param,
   Post,
+  Query,
+  Req,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateShareItemDto } from './dto/create-share-item.dto';
 import { ShareService } from './share.service';
+import { Request } from 'express';
+import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
 
+@ApiBearerAuth()
 @ApiTags('share')
 @Controller('share')
 export class ShareController {
@@ -18,14 +21,17 @@ export class ShareController {
 
   @Post('/')
   async create(
-    @Headers('authorization') token: string,
+    @Req() req: Request,
     @Body(new ValidationPipe()) body: CreateShareItemDto,
   ) {
-    return this.shareService.create(token, body);
+    return this.shareService.create(req, body);
   }
 
-  @Get('/:user_id')
-  async getByUser(@Param('user_id') userId: string) {
-    return this.shareService.getSharedItemByUser(userId);
+  @Get('/')
+  async get(
+    @Req() req: Request,
+    @Query(new ValidationPipe()) pagination: PaginationOptions,
+  ) {
+    return this.shareService.getSharedItemByUser(req, pagination);
   }
 }

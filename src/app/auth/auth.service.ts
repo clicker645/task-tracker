@@ -3,6 +3,7 @@ import {
   BadRequestException,
   HttpException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
@@ -14,6 +15,7 @@ import { SignInDto } from './dto/signin.dto';
 import { CreateTokenDto } from './token/dto/create.token.dto';
 import { ILoginResponse } from './interfaces/login-response.interface';
 import { ITokenPayload } from './token/interfaces/token-payload.interface';
+import { Request } from 'express';
 import { dictionary } from 'src/config/dictionary';
 
 @Injectable()
@@ -31,16 +33,16 @@ export class AuthService {
         throw new HttpException(dictionary.errors.verifiedError, 405);
       }
 
-      return <ILoginResponse>{
+      return {
         userId: user._id,
         role: user.role,
         status: user.status,
-        token: await this.tokenService.create(<CreateTokenDto>{
+        token: await this.tokenService.create({
           _id: user._id,
           role: user.role,
           status: user.status,
-        }),
-      };
+        } as CreateTokenDto),
+      } as ILoginResponse;
     }
 
     throw new NotFoundException({
@@ -48,9 +50,9 @@ export class AuthService {
     });
   }
 
-  async logout(token: string): Promise<boolean> {
-    const data = (await this.tokenService.verify(token)) as ITokenPayload;
-    return this.tokenService.deleteByUserId(data._id);
+  async logout(req: Request): Promise<boolean> {
+    const currentUser = await this.getUserFromAuthorization(req);
+    return this.tokenService.deleteByUserId(currentUser._id);
   }
 
   async confirm(token: string): Promise<IUser> {
@@ -69,12 +71,22 @@ export class AuthService {
     });
   }
 
-  async getCurrentUser(token: string): Promise<ITokenPayload> {
-    if (token) {
-      return this.tokenService.getUserDataFromToken(token);
+  async getTokenFromReq(req: Request): Promise<string> {
+    const token = req.headers.authorization;
+    if (!token) {
+      throw new UnauthorizedException(dictionary.errors.tokenDoesntExist);
     }
 
-    throw new Error(dictionary.errors.tokenDoesntExist);
+    return token;
+  }
+
+  async getCurrentUser(token: string): Promise<ITokenPayload> {
+    return this.tokenService.verify(token);
+  }
+
+  async getUserFromAuthorization(req: Request): Promise<ITokenPayload> {
+    const token = await this.getTokenFromReq(req);
+    return this.getCurrentUser(token);
   }
 
   async sendResetLink(email: string): Promise<boolean> {
