@@ -17,6 +17,10 @@ export const ItemSchema = new mongoose.Schema(
       required: true,
       ref: ModelsEnum.USER,
     },
+    expiresAt: {
+      type: Date,
+      required: true,
+    },
   },
   {
     timestamps: true,
