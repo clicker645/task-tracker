@@ -1,9 +1,7 @@
 import {
   BadRequestException,
-  Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { ShareRepository } from './repositories/mongoose/share.repository';
 import { CreateShareItemDto } from './dto/create-share-item.dto';
 import { IShareItem } from './interfaces/share-item.interface';
 import { PaginateResult } from 'mongoose';
@@ -11,11 +9,11 @@ import { AuthService } from '../auth/auth.service';
 import { Request } from 'express';
 import { dictionary } from '../../config/dictionary';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
+import { IShareRepository } from './repositories/share.repository.interface';
 
-@Injectable()
 export class ShareService {
   constructor(
-    private readonly shareRepository: ShareRepository,
+    private readonly shareRepository: IShareRepository,
     private readonly authService: AuthService,
   ) {}
 

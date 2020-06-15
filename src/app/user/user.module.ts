@@ -1,18 +1,13 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { UserSchema } from './repositories/mongoose/schemas/user.schema';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { TokenModule } from '../auth/token/token.module';
-import { UserRepository } from './repositories/mongoose/user.repository';
-import { ModelsEnum } from '../../models/models.enum';
+import { DatabaseModule } from '../../infrastructure/databases/mongoose/mongoose.module';
+import { userProviders } from './user.providers';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: ModelsEnum.USER, schema: UserSchema }]),
-    TokenModule,
-  ],
-  providers: [UserService, UserRepository],
+  imports: [DatabaseModule, TokenModule],
+  providers: [...userProviders],
   controllers: [UserController],
   exports: [UserService],
 })

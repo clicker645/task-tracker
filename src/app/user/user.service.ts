@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
@@ -10,19 +9,18 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ActionType, TokenService } from '../auth/token/token.service';
-import { UserRepository } from './repositories/mongoose/user.repository';
 import { QueryUserDto } from './dto/query-user.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { Request } from 'express';
 import { dictionary } from '../../config/dictionary';
+import { IUserRepository } from './repositories/user.repository.interface';
 
-@Injectable()
 export class UserService {
   private readonly saltRounds = 10;
 
   constructor(
-    private readonly userRepository: UserRepository,
-    private tokenService: TokenService,
+    private readonly userRepository: IUserRepository,
+    private readonly tokenService: TokenService,
   ) {}
 
   async hashPassword(password: string): Promise<string> {

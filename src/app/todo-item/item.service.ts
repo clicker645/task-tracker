@@ -1,14 +1,12 @@
 import {
   BadRequestException,
   ForbiddenException,
-  Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { PaginateResult } from 'mongoose';
 import { IItem } from './interfaces/item.interface';
 import { CreateItemDto } from './dto/create-item.dto';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
-import { ItemRepository } from './repositories/mongoose/item.repository';
 import { AuthService } from '../auth/auth.service';
 import { ShareService } from '../share/share.service';
 import { AccessType } from '../share/enums/access-type.enum';
@@ -18,10 +16,11 @@ import { IDocumentHistory } from '../../infrastructure/databases/mongoose/docume
 import { Request } from 'express';
 import { dictionary } from '../../config/dictionary';
 import * as mongoose from 'mongoose';
-@Injectable()
+import { IItemRepository } from './repositories/item.repository.interface';
+
 export class ItemService {
   constructor(
-    private readonly itemRepository: ItemRepository,
+    private readonly itemRepository: IItemRepository,
     private readonly authService: AuthService,
     private readonly shareService: ShareService,
     private readonly docHistoryService: DocumentHistoryService,

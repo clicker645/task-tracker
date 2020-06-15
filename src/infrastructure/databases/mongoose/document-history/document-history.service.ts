@@ -1,16 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { DocumentHistoryRepository } from './repositories/mongoose/document-history.repository';
 import * as mongoose from 'mongoose';
 import { DocumentHistoryDto } from './dto/create-document-history.dto';
 import { Document, PaginateResult } from 'mongoose';
 import { PaginationOptions } from '../pagination/paginate.params';
 import { IDocumentHistory } from './interfaces/document-history.interface';
+import { IHistoryRepository } from './repositories/document-history.repository.interface';
 
-@Injectable()
 export class DocumentHistoryService {
-  constructor(
-    private readonly docHistoryRepository: DocumentHistoryRepository,
-  ) {}
+  constructor(private readonly docHistoryRepository: IHistoryRepository) {}
 
   async saveChangeHistory(
     model: string,
