@@ -5,25 +5,19 @@ import {
 import { CreateShareItemDto } from './dto/create-share-item.dto';
 import { IShareItem } from './interfaces/share-item.interface';
 import { PaginateResult } from 'mongoose';
-import { AuthService } from '../auth/auth.service';
-import { Request } from 'express';
 import { dictionary } from '../../config/dictionary';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
 import { IShareRepository } from './repositories/share.repository.interface';
 
 export class ShareService {
-  constructor(
-    private readonly shareRepository: IShareRepository,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly shareRepository: IShareRepository) {}
 
   async create(
-    req: Request,
+    currentUserId: string,
     createShareItemDto: CreateShareItemDto,
   ): Promise<IShareItem> {
     try {
-      const currentUser = await this.authService.getUserFromAuthorization(req);
-      if (String(currentUser._id) === String(createShareItemDto.userId)) {
+      if (String(currentUserId) === String(createShareItemDto.userId)) {
         throw new BadRequestException({
           message: dictionary.errors.shareYourselfError,
         });
@@ -36,13 +30,12 @@ export class ShareService {
   }
 
   async getSharedItemByUser(
-    req: Request,
+    currentUserId: string,
     pagination: PaginationOptions,
   ): Promise<PaginateResult<IShareItem>> {
     try {
-      const currentUser = await this.authService.getUserFromAuthorization(req);
       return await this.shareRepository.findAll(
-        { userId: currentUser._id },
+        { userId: currentUserId },
         pagination,
       );
     } catch (e) {

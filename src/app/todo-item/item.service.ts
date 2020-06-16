@@ -7,13 +7,11 @@ import { PaginateResult } from 'mongoose';
 import { IItem } from './interfaces/item.interface';
 import { CreateItemDto } from './dto/create-item.dto';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
-import { AuthService } from '../auth/auth.service';
 import { ShareService } from '../share/share.service';
 import { AccessType } from '../share/enums/access-type.enum';
 import { DocumentHistoryService } from '../../infrastructure/databases/mongoose/document-history/document-history.service';
 import { ModelsEnum } from '../../models/models.enum';
 import { IDocumentHistory } from '../../infrastructure/databases/mongoose/document-history/interfaces/document-history.interface';
-import { Request } from 'express';
 import { dictionary } from '../../config/dictionary';
 import * as mongoose from 'mongoose';
 import { IItemRepository } from './repositories/item.repository.interface';
@@ -21,19 +19,17 @@ import { IItemRepository } from './repositories/item.repository.interface';
 export class ItemService {
   constructor(
     private readonly itemRepository: IItemRepository,
-    private readonly authService: AuthService,
     private readonly shareService: ShareService,
     private readonly docHistoryService: DocumentHistoryService,
   ) {}
 
-  async create(req: Request, dto: CreateItemDto): Promise<IItem> {
+  async create(currentUserId: string, dto: CreateItemDto): Promise<IItem> {
     try {
-      const currentUser = await this.authService.getUserFromAuthorization(req);
       if (!dto.userId) {
-        dto.userId = mongoose.Types.ObjectId(currentUser._id);
+        dto.userId = mongoose.Types.ObjectId(currentUserId);
       }
 
-      if (currentUser._id !== dto.userId.toString()) {
+      if (currentUserId !== dto.userId.toString()) {
         throw new BadRequestException(
           dictionary.errors.createItemForAnotherUserError,
         );
@@ -54,11 +50,14 @@ export class ItemService {
   }
 
   async getSharedItems(
-    req: Request,
+    currentUserId: string,
     pagination: PaginationOptions,
   ): Promise<PaginateResult<IItem>> {
     const sharedItemsId: string[] = [];
-    const data = await this.shareService.getSharedItemByUser(req, pagination);
+    const data = await this.shareService.getSharedItemByUser(
+      currentUserId,
+      pagination,
+    );
     data.docs.forEach(sharedItem => {
       sharedItemsId.push(sharedItem.itemId);
     });
@@ -76,29 +75,27 @@ export class ItemService {
   }
 
   async getByUser(
-    req: Request,
+    currentUserId: string,
     pagination: PaginationOptions,
   ): Promise<PaginateResult<IItem>> {
     try {
-      const currentUser = await this.authService.getUserFromAuthorization(req);
-      return this.itemRepository.getByUser(currentUser._id, pagination);
+      return this.itemRepository.getByUser(currentUserId, pagination);
     } catch (e) {
       throw new BadRequestException(e);
     }
   }
 
   async update(
-    req: Request,
+    currentUserId: string,
     _id: string,
     payload: Partial<IItem>,
   ): Promise<IItem> {
-    const currentUser = await this.authService.getUserFromAuthorization(req);
     const currentItem = await this.itemRepository.findById(_id);
 
     if (
-      currentItem.userId.toString() === currentUser._id.toString() ||
+      currentItem.userId.toString() === currentUserId.toString() ||
       (await this.shareService.checkPermission(
-        currentUser._id,
+        currentUserId,
         currentItem._id,
         AccessType.ReadWrite,
       ))
@@ -107,7 +104,7 @@ export class ItemService {
         const oldItem = await this.itemRepository.findById(_id);
         const result = await this.itemRepository.update(_id, payload);
         this.docHistoryService
-          .saveChangeHistory(ModelsEnum.ITEM, currentUser._id, oldItem, payload)
+          .saveChangeHistory(ModelsEnum.ITEM, currentUserId, oldItem, payload)
           .catch(e => {
             console.log(e);
           });
@@ -121,11 +118,10 @@ export class ItemService {
     throw new ForbiddenException(dictionary.errors.permissionForModifyError);
   }
 
-  async delete(req: Request, _id: string): Promise<any> {
+  async delete(currentUserId: string, _id: string): Promise<any> {
     try {
-      const currentUser = await this.authService.getUserFromAuthorization(req);
       const currentItem = await this.itemRepository.findById(_id);
-      if (currentUser._id !== currentItem.userId.toString()) {
+      if (currentUserId !== currentItem.userId.toString()) {
         throw new ForbiddenException(
           dictionary.errors.permissionForModifyError,
         );

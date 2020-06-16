@@ -1,12 +1,10 @@
 import { ModelsEnum } from '../../models/models.enum';
 import { Connection, PaginateModel } from 'mongoose';
 import { mongooseConnection } from '../../infrastructure/databases/mongoose/mongoose.provider';
-import { UserService } from '../user/user.service';
 import { ShareItem } from './repositories/mongoose/schemas/share-item.schema';
 import { ShareRepository } from './repositories/mongoose/share.repository';
 import { IShareItem } from './interfaces/share-item.interface';
 import { ShareService } from './share.service';
-import { AuthService } from '../auth/auth.service';
 
 export const shareProviders = [
   {
@@ -24,9 +22,9 @@ export const shareProviders = [
   },
   {
     provide: ShareService,
-    useFactory: (repository, authService) => {
-      return new UserService(repository, authService);
+    useFactory: repository => {
+      return new ShareService(repository);
     },
-    inject: [ShareRepository, AuthService],
+    inject: [ShareRepository],
   },
 ];

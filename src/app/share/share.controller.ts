@@ -4,14 +4,14 @@ import {
   Get,
   Post,
   Query,
-  Req,
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateShareItemDto } from './dto/create-share-item.dto';
 import { ShareService } from './share.service';
-import { Request } from 'express';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
+import { VerifyToken } from '../auth/token/decorators/verify-token.decorator';
+import { ITokenPayload } from '../auth/token/interfaces/token-payload.interface';
 
 @ApiBearerAuth()
 @ApiTags('share')
@@ -21,17 +21,17 @@ export class ShareController {
 
   @Post('/')
   async create(
-    @Req() req: Request,
+    @VerifyToken() tokenUser: ITokenPayload,
     @Body(new ValidationPipe()) body: CreateShareItemDto,
   ) {
-    return this.shareService.create(req, body);
+    return this.shareService.create(tokenUser._id, body);
   }
 
   @Get('/')
   async get(
-    @Req() req: Request,
+    @VerifyToken() tokenUser: ITokenPayload,
     @Query(new ValidationPipe()) pagination: PaginationOptions,
   ) {
-    return this.shareService.getSharedItemByUser(req, pagination);
+    return this.shareService.getSharedItemByUser(tokenUser._id, pagination);
   }
 }

@@ -5,13 +5,13 @@ import {
   ValidationPipe,
   Get,
   Query,
-  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ConfirmAccountDto } from './dto/confirm-account.dto';
 import { SignInDto } from './dto/signin.dto';
-import { Request } from 'express';
+import { VerifyToken } from './token/decorators/verify-token.decorator';
+import { ITokenPayload } from './token/interfaces/token-payload.interface';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -33,8 +33,8 @@ export class AuthController {
 
   @ApiBearerAuth()
   @Post('/logout')
-  async logout(@Req() req: Request) {
-    return await this.authService.logout(req);
+  async logout(@VerifyToken() userToken: ITokenPayload) {
+    return await this.authService.logout(userToken._id);
   }
 
   @Post('/reset')

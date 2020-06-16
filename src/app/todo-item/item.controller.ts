@@ -7,7 +7,6 @@ import {
   Patch,
   Post,
   Query,
-  Req,
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -15,7 +14,8 @@ import { ItemService } from './item.service';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
-import { Request } from 'express';
+import { VerifyToken } from '../auth/token/decorators/verify-token.decorator';
+import { ITokenPayload } from '../auth/token/interfaces/token-payload.interface';
 
 @ApiBearerAuth()
 @ApiTags('item')
@@ -25,35 +25,35 @@ export class ItemController {
 
   @Get('/')
   async get(
-    @Req() req: Request,
+    @VerifyToken() tokenUser: ITokenPayload,
     @Query(new ValidationPipe()) pagination: PaginationOptions,
   ) {
-    return this.itemService.getByUser(req, pagination);
+    return this.itemService.getByUser(tokenUser._id, pagination);
   }
 
   @Post('/')
   async create(
-    @Req() req: Request,
+    @VerifyToken() tokenUser: ITokenPayload,
     @Body(new ValidationPipe()) data: CreateItemDto,
   ) {
-    return this.itemService.create(req, data);
+    return this.itemService.create(tokenUser._id, data);
   }
 
   @Patch('/:id')
   async update(
-    @Req() req: Request,
+    @VerifyToken() tokenUser: ITokenPayload,
     @Param('id') id: string,
     @Body(new ValidationPipe()) data: UpdateItemDto,
   ) {
-    return this.itemService.update(req, id, data);
+    return this.itemService.update(tokenUser._id, id, data);
   }
 
   @Get('/shared')
   async getSharedItems(
-    @Req() req: Request,
+    @VerifyToken() tokenUser: ITokenPayload,
     @Query() pagination: PaginationOptions,
   ) {
-    return this.itemService.getSharedItems(req, pagination);
+    return this.itemService.getSharedItems(tokenUser._id, pagination);
   }
 
   @Get('/history/:id')
@@ -65,7 +65,7 @@ export class ItemController {
   }
 
   @Delete('/:id')
-  delete(@Req() req: Request, @Param('id') id: string) {
-    return this.itemService.delete(req, id);
+  delete(@VerifyToken() tokenUser: ITokenPayload, @Param('id') id: string) {
+    return this.itemService.delete(tokenUser._id, id);
   }
 }

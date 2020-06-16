@@ -3,7 +3,6 @@ import {
   BadRequestException,
   HttpException,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
@@ -14,8 +13,6 @@ import { statusEnum } from 'src/app/user/enums/status.enum';
 import { SignInDto } from './dto/signin.dto';
 import { CreateTokenDto } from './token/dto/create.token.dto';
 import { ILoginResponse } from './interfaces/login-response.interface';
-import { ITokenPayload } from './token/interfaces/token-payload.interface';
-import { Request } from 'express';
 import { dictionary } from 'src/config/dictionary';
 
 @Injectable()
@@ -50,9 +47,8 @@ export class AuthService {
     });
   }
 
-  async logout(req: Request): Promise<boolean> {
-    const currentUser = await this.getUserFromAuthorization(req);
-    return this.tokenService.deleteByUserId(currentUser._id);
+  async logout(_id: string): Promise<boolean> {
+    return this.tokenService.deleteByUserId(_id);
   }
 
   async confirm(token: string): Promise<IUser> {
@@ -69,24 +65,6 @@ export class AuthService {
     throw new BadRequestException({
       message: dictionary.errors.confirmError,
     });
-  }
-
-  async getTokenFromReq(req: Request): Promise<string> {
-    const token = req.headers.authorization;
-    if (!token) {
-      throw new UnauthorizedException(dictionary.errors.tokenDoesntExist);
-    }
-
-    return token;
-  }
-
-  async getCurrentUser(token: string): Promise<ITokenPayload> {
-    return this.tokenService.verify(token);
-  }
-
-  async getUserFromAuthorization(req: Request): Promise<ITokenPayload> {
-    const token = await this.getTokenFromReq(req);
-    return this.getCurrentUser(token);
   }
 
   async sendResetLink(email: string): Promise<boolean> {

@@ -17,4 +17,10 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT);
 }
-bootstrap();
+bootstrap()
+  .then(() => {
+    console.log('Server started...');
+  })
+  .catch(e => {
+    throw new Error(e);
+  });

@@ -4,7 +4,6 @@ import {
   NestModule,
   RequestMethod,
 } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './app/user/user.module';
 import { AuthModule } from './app/auth/auth.module';
 import { TokenModule } from './app/auth/token/token.module';
@@ -20,10 +19,6 @@ import { ShareController } from './app/share/share.controller';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGODB_CONNECTION_STRING, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }),
     DocumentHistoryModule,
     AuthModule,
     UserModule,

@@ -1,7 +1,6 @@
 export enum ModelsEnum {
   USER = 'User',
   ITEM = 'Item',
-  TOKEN = 'Token',
   DOCUMENT_HISTORY = 'DocumentHistory',
   SHARE = 'Share',
 }
