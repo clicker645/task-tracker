@@ -7,6 +7,7 @@ import { IItem } from './interfaces/item.interface';
 import { ItemService } from './item.service';
 import { ShareService } from '../share/share.service';
 import { DocumentHistoryService } from '../../infrastructure/databases/mongoose/document-history/document-history.service';
+import { ItemResolver } from './item.resolver';
 
 export const itemProviders = [
   {

@@ -16,9 +16,17 @@ import { ShareModule } from './app/share/share.module';
 import { DocumentHistoryModule } from './infrastructure/databases/mongoose/document-history/document-history.module';
 import { ItemController } from './app/todo-item/item.controller';
 import { ShareController } from './app/share/share.controller';
+import { GraphQLModule } from '@nestjs/graphql';
 
 @Module({
   imports: [
+    GraphQLModule.forRoot({
+      context: ({ req }) => ({ req }),
+      installSubscriptionHandlers: true,
+      autoSchemaFile: 'schema.gql',
+      playground: true,
+      debug: true,
+    }),
     DocumentHistoryModule,
     AuthModule,
     UserModule,

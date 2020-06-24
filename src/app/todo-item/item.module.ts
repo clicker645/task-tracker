@@ -6,10 +6,11 @@ import { ShareModule } from '../share/share.module';
 import { DocumentHistoryModule } from '../../infrastructure/databases/mongoose/document-history/document-history.module';
 import { itemProviders } from './item.providers';
 import { DatabaseModule } from '../../infrastructure/databases/mongoose/mongoose.module';
+import { ItemResolver } from './item.resolver';
 
 @Module({
   imports: [DatabaseModule, AuthModule, ShareModule, DocumentHistoryModule],
-  providers: [...itemProviders],
+  providers: [...itemProviders, ItemResolver],
   controllers: [ItemController],
   exports: [ItemService],
 })
