@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from '../../user/interfaces/user.interface';
-import * as moment from 'moment';
+import moment from 'moment';
 import { ConfigService } from '@nestjs/config';
 import { MailService } from '../../../infrastructure/mail/mail.service';
 import { RedisService } from '../../../infrastructure/databases/redis/redis.service';

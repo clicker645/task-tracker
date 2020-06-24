@@ -1,5 +1,5 @@
-import * as pagination from 'mongoose-paginate-v2';
-import * as mongoose from 'mongoose';
+import pagination from 'mongoose-paginate-v2';
+import mongoose from 'mongoose';
 import { AccessType } from '../../../enums/access-type.enum';
 import { ModelsEnum } from '../../../../../models/models.enum';
 

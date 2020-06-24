@@ -13,7 +13,7 @@ import { DocumentHistoryService } from '../../infrastructure/databases/mongoose/
 import { ModelsEnum } from '../../models/models.enum';
 import { IDocumentHistory } from '../../infrastructure/databases/mongoose/document-history/interfaces/document-history.interface';
 import { dictionary } from '../../config/dictionary';
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 import { IItemRepository } from './repositories/item.repository.interface';
 
 export class ItemService {

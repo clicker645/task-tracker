@@ -4,7 +4,7 @@ import {
   HttpException,
   NotFoundException,
 } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
 
 import { UserService } from 'src/app/user/user.service';
 import { ActionType, TokenService } from 'src/app/auth/token/token.service';

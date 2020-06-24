@@ -1,7 +1,7 @@
 import { statusEnum } from '../enums/status.enum';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
 export class CreateItemDto {
   @ApiProperty()

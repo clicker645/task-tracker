@@ -1,5 +1,5 @@
-import * as mongoose from 'mongoose';
-import * as pagination from 'mongoose-paginate-v2';
+import mongoose from 'mongoose';
+import pagination from 'mongoose-paginate-v2';
 import {
   getModelsArray,
   ModelsEnum,

@@ -2,7 +2,7 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
 import { IUser } from './interfaces/user.interface';
 import { PaginateResult } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';

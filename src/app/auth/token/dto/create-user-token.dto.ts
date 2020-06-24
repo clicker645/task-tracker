@@ -1,5 +1,5 @@
 import { IsString, IsDateString } from 'class-validator';
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
 export class CreateUserTokenDto {
   @IsString()

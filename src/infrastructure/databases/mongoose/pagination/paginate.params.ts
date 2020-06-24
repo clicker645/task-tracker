@@ -1,4 +1,4 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class PaginationOptions implements mongoose.PaginateOptions {

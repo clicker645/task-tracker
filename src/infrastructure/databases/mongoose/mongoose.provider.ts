@@ -1,4 +1,4 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 
 export const mongooseConnection = 'DATABASE_CONNECTION';

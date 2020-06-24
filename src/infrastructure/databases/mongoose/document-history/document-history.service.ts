@@ -1,4 +1,4 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 import { DocumentHistoryDto } from './dto/create-document-history.dto';
 import { Document, PaginateResult } from 'mongoose';
 import { PaginationOptions } from '../pagination/paginate.params';
