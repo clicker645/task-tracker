@@ -16,13 +16,13 @@ export class ShareService {
     currentUserId: string,
     createShareItemDto: CreateShareItemDto,
   ): Promise<IShareItem> {
-    try {
-      if (String(currentUserId) === String(createShareItemDto.userId)) {
-        throw new BadRequestException({
-          message: dictionary.errors.shareYourselfError,
-        });
-      }
+    if (currentUserId === createShareItemDto.userId.toString()) {
+      throw new BadRequestException({
+        message: dictionary.errors.shareYourselfError,
+      });
+    }
 
+    try {
       return await this.shareRepository.create(createShareItemDto);
     } catch (e) {
       throw new BadRequestException(e);

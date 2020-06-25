@@ -1,5 +1,7 @@
 import { IsString, Matches, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { passwordMatchRegexp } from '../user.constants';
+import { dictionary } from '../../../config/dictionary';
 
 export class ChangePasswordDto {
   @ApiProperty()
@@ -9,10 +11,9 @@ export class ChangePasswordDto {
 
   @IsString()
   @IsNotEmpty()
-  @Matches(
-    /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})/,
-    { message: 'Weak password' },
-  )
+  @Matches(passwordMatchRegexp, {
+    message: dictionary.errors.passwordMatchError,
+  })
   @ApiProperty()
   readonly newPassword: string;
 

@@ -6,6 +6,7 @@ import { IUser } from './interfaces/user.interface';
 import { UserService } from './user.service';
 import { TokenService } from '../auth/token/token.service';
 import { mongooseConnection } from '../../infrastructure/databases/mongoose/mongoose.provider';
+import { ConfirmService } from '../confirm/confirm.service';
 
 export const userProviders = [
   {
@@ -23,9 +24,9 @@ export const userProviders = [
   },
   {
     provide: UserService,
-    useFactory: (repository, tokenService) => {
-      return new UserService(repository, tokenService);
+    useFactory: (repository, tokenService, confirmService) => {
+      return new UserService(repository, tokenService, confirmService);
     },
-    inject: [UserRepository, TokenService],
+    inject: [UserRepository, TokenService, ConfirmService],
   },
 ];

@@ -1,20 +1,18 @@
 import {
   createParamDecorator,
   ExecutionContext,
-  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { dictionary } from '../../../../config/dictionary';
 import { trimPrefix } from '../../../../common/trim-prefix';
 import { ITokenPayload } from '../interfaces/token-payload.interface';
-import { AuthGuard } from '@nestjs/passport';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { bearerPrefix } from '../token.constants';
 
-const bearerPrefix = 'Bearer ';
 const jwt = new JwtService({
-  secret: process.env.JWT_SECRET,
-  signOptions: { expiresIn: process.env.JWT_TOKEN_LIFETIME },
+  secret: 'SomeKey',
+  signOptions: { expiresIn: '1d' },
 });
 
 export const VerifyToken = createParamDecorator(
@@ -29,14 +27,6 @@ export const VerifyToken = createParamDecorator(
     return jwt.verify(token) as ITokenPayload;
   },
 );
-
-@Injectable()
-export class GqlAuthGuard extends AuthGuard('jwt') {
-  getRequest(context: ExecutionContext) {
-    const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext().req;
-  }
-}
 
 export const CurrentUser = createParamDecorator(
   (data: unknown, context: ExecutionContext) => {

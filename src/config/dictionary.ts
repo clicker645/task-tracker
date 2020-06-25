@@ -1,5 +1,6 @@
 export const dictionary = {
   errors: {
+    passwordMatchError: 'Weak password',
     validationError: 'Error: validation failed.',
     tokenError: 'Error: wrong access token.',
     tokenExpired: 'Error: token expired',

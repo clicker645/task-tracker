@@ -8,28 +8,33 @@ import { PaginateResult } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { ActionType, TokenService } from '../auth/token/token.service';
+import { TokenService } from '../auth/token/token.service';
 import { QueryUserDto } from './dto/query-user.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { Request } from 'express';
 import { dictionary } from '../../config/dictionary';
 import { IUserRepository } from './repositories/user.repository.interface';
+import { saltRounds } from './user.constants';
+import { ConfirmService, MessageType } from '../confirm/confirm.service';
 
 export class UserService {
-  private readonly saltRounds = 10;
-
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly tokenService: TokenService,
+    private readonly confirmService: ConfirmService,
   ) {}
 
   async hashPassword(password: string): Promise<string> {
-    return await bcrypt.hash(password, await bcrypt.genSalt(this.saltRounds));
+    return await bcrypt.hash(password, await bcrypt.genSalt(saltRounds));
   }
 
   async changePassword(payload: ChangePasswordDto): Promise<boolean> {
     const user = await this.findById(payload._id);
-    if (!(await bcrypt.compare(payload.oldPassword, user.password))) {
+    const passwordsIsCompare = await bcrypt.compare(
+      payload.oldPassword,
+      user.password,
+    );
+    if (!passwordsIsCompare) {
       throw new BadRequestException(dictionary.errors.oldPassIncorrect);
     }
 
@@ -44,25 +49,30 @@ export class UserService {
   async resetPassword(payload: ResetPasswordDto): Promise<boolean> {
     const jwtToken = await this.tokenService.verify(payload.token);
     const newPassword = await this.hashPassword(payload.password);
-    await this.userRepository.update(jwtToken._id, {
-      password: newPassword,
-    });
+
+    try {
+      await this.userRepository.update(jwtToken._id, {
+        password: newPassword,
+      });
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
 
     return true;
   }
 
   async create(createUserDto: CreateUserDto): Promise<any> {
-    try {
-      createUserDto.password = await this.hashPassword(createUserDto.password);
-      const user = await this.userRepository.create(createUserDto);
-      await this.tokenService.sendLink(user, ActionType.Confirm);
+    let user = null;
+    createUserDto.password = await this.hashPassword(createUserDto.password);
 
-      return { message: dictionary.notifications.successfullyUserCreate };
+    try {
+      user = await this.userRepository.create(createUserDto);
+      await this.confirmService.send(user, MessageType.Confirm);
     } catch (e) {
-      throw new BadRequestException({
-        message: dictionary.errors.emailAlreadyExist,
-      });
+      throw new BadRequestException(e);
     }
+
+    return { message: dictionary.notifications.successfullyUserCreate };
   }
 
   async getCurrent(req: Request): Promise<IUser> {

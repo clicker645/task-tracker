@@ -8,6 +8,8 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { genderEnum } from '../enums/gender.enum';
 import { roleEnum } from '../enums/role.enum';
+import { passwordMatchRegexp } from '../user.constants';
+import { dictionary } from '../../../config/dictionary';
 
 export class CreateUserDto {
   @ApiProperty()
@@ -30,10 +32,9 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  @Matches(
-    /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})/,
-    { message: 'Weak password' },
-  )
+  @Matches(passwordMatchRegexp, {
+    message: dictionary.errors.passwordMatchError,
+  })
   @ApiProperty()
   password: string;
 }

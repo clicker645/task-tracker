@@ -1,54 +1,59 @@
 import {
   Injectable,
   BadRequestException,
-  HttpException,
   NotFoundException,
+  MethodNotAllowedException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import bcrypt from 'bcrypt';
 
 import { UserService } from 'src/app/user/user.service';
-import { ActionType, TokenService } from 'src/app/auth/token/token.service';
+import { TokenService } from 'src/app/auth/token/token.service';
 import { IUser } from 'src/app/user/interfaces/user.interface';
 import { statusEnum } from 'src/app/user/enums/status.enum';
 import { SignInDto } from './dto/signin.dto';
-import { CreateTokenDto } from './token/dto/create.token.dto';
-import { ILoginResponse } from './interfaces/login-response.interface';
 import { dictionary } from 'src/config/dictionary';
+import { LoginResponse } from './responses/login.response';
+import { ConfirmService, MessageType } from '../confirm/confirm.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly tokenService: TokenService,
+    private readonly confirmService: ConfirmService,
   ) {}
 
-  async login({ email, password }: SignInDto): Promise<ILoginResponse> {
+  async login({ email, password }: SignInDto): Promise<LoginResponse> {
     const user = await this.userService.findByEmail(email);
+    const passwordsIsCompare = await bcrypt.compare(password, user.password);
 
-    if (user && (await bcrypt.compare(password, user.password))) {
+    if (user && passwordsIsCompare) {
       if (user.status !== statusEnum.active) {
-        throw new HttpException(dictionary.errors.verifiedError, 405);
+        throw new MethodNotAllowedException(dictionary.errors.verifiedError);
       }
 
-      return {
-        userId: user._id,
+      const token = await this.tokenService.create({
+        _id: user._id,
         role: user.role,
         status: user.status,
-        token: await this.tokenService.create({
-          _id: user._id,
-          role: user.role,
-          status: user.status,
-        } as CreateTokenDto),
-      } as ILoginResponse;
+      });
+
+      const loginResponse = new LoginResponse();
+      return loginResponse.factory(user, token);
     }
 
-    throw new NotFoundException({
+    throw new BadRequestException({
       message: dictionary.errors.credentialsError,
     });
   }
 
   async logout(_id: string): Promise<boolean> {
-    return this.tokenService.deleteByUserId(_id);
+    try {
+      return this.tokenService.deleteByUserId(_id);
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
   }
 
   async confirm(token: string): Promise<IUser> {
@@ -75,6 +80,6 @@ export class AuthService {
       });
     }
 
-    return this.tokenService.sendLink(user, ActionType.Reset);
+    return this.confirmService.send(user, MessageType.Reset);
   }
 }

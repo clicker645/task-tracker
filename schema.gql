@@ -35,3 +35,14 @@ type Query {
   items(select: String, sort: String, lean: Boolean, leanWithId: Boolean, offset: ID, page: ID, limit: ID, pagination: Boolean, populate: [String!]): PaginateItems!
   itemsByUser(select: String, sort: String, lean: Boolean, leanWithId: Boolean, offset: ID, page: ID, limit: ID, pagination: Boolean, populate: [String!]): PaginateItems!
 }
+
+type Mutation {
+  addItem(input: CreateItemDto!): ItemType!
+}
+
+input CreateItemDto {
+  title: String!
+  description: String!
+  status: String!
+  expiresAt: DateTime!
+}

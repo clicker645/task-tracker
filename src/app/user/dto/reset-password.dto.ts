@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Matches } from 'class-validator';
+import { passwordMatchRegexp } from '../user.constants';
+import { dictionary } from '../../../config/dictionary';
 
 export class ResetPasswordDto {
   @ApiProperty()
@@ -7,10 +9,9 @@ export class ResetPasswordDto {
 
   @IsString()
   @IsNotEmpty()
-  @Matches(
-    /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})/,
-    { message: 'Weak password' },
-  )
+  @Matches(passwordMatchRegexp, {
+    message: dictionary.errors.passwordMatchError,
+  })
   @ApiProperty()
   readonly password: string;
 }

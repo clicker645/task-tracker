@@ -1,14 +1,11 @@
 import { ItemService } from './item.service';
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ItemType } from './types/item.type';
 import { PaginateItems } from './types/paginate-items.type';
 import { ItemArgs } from './dto/item.args';
-import {
-  CurrentUser,
-  GqlAuthGuard,
-} from '../auth/token/decorators/verify-token.decorator';
+import { CurrentUser } from '../auth/token/decorators/verify-token.decorator';
 import { ITokenPayload } from '../auth/token/interfaces/token-payload.interface';
-import { UseGuards } from '@nestjs/common';
+import { CreateItemDto } from './dto/create-item.dto';
 
 @Resolver(of => ItemType)
 export class ItemResolver {
@@ -20,11 +17,18 @@ export class ItemResolver {
   }
 
   @Query(returns => PaginateItems)
-  @UseGuards(GqlAuthGuard)
   async itemsByUser(
     @Args() args: ItemArgs,
     @CurrentUser() currentUser: ITokenPayload,
   ): Promise<PaginateItems> {
     return this.itemService.getByUser(currentUser._id, args);
+  }
+
+  @Mutation(returns => ItemType)
+  async addItem(
+    @Args('input') newItemData: CreateItemDto,
+    @CurrentUser() currentUser: ITokenPayload,
+  ) {
+    return this.itemService.create(currentUser._id, newItemData);
   }
 }
