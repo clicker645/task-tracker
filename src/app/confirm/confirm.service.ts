@@ -1,10 +1,10 @@
+import { JwtService } from '@nestjs/jwt';
 import { Injectable } from '@nestjs/common';
 import { ResetPasswordTemplate } from '../../infrastructure/mail/templates/reset-password.template';
 import { ConfirmTemplate } from '../../infrastructure/mail/templates/confirm.template';
 import { MailService } from '../../infrastructure/mail/mail.service';
-import { TokenService } from '../auth/token/token.service';
 import { ConfigService } from '@nestjs/config';
-import { IUser } from '../user/interfaces/user.interface';
+import { User } from '../user/domain/user.model';
 
 export const MessageType = {
   Reset: {
@@ -29,15 +29,14 @@ declare type MessageType = {
 export class ConfirmService {
   constructor(
     private readonly mailService: MailService,
-    private readonly tokenService: TokenService,
     private readonly configService: ConfigService,
   ) {}
 
-  async send(user: IUser, messageType: MessageType): Promise<boolean> {
+  async send(user: User, messageType: MessageType): Promise<boolean> {
     let confirmToken = null;
 
     try {
-      confirmToken = this.tokenService.create(user);
+      confirmToken = 'asd';
     } catch (e) {
       throw new Error(e);
     }

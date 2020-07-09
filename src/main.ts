@@ -1,10 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ClusterService } from './cluster.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors();
+  app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
 
   const options = new DocumentBuilder()
     .addBearerAuth()
@@ -14,13 +19,7 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('swagger', app, document);
-
   await app.listen(process.env.PORT);
 }
-bootstrap()
-  .then(() => {
-    console.log('Server started...');
-  })
-  .catch(e => {
-    throw new Error(e);
-  });
+
+bootstrap();

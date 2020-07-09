@@ -1,8 +1,8 @@
 import { Document } from 'mongoose';
-import { IUser } from '../../../../../app/user/interfaces/user.interface';
+import { User } from '../../../../../app/user/domain/user.model';
 
 export interface IDocumentHistory extends Document {
-  user: IUser;
+  user: User;
   target: string;
   from: string;
   to: string;

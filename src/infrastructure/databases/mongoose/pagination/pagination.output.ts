@@ -1,39 +1,21 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Type } from '@nestjs/common';
+export class PaginatedType<T> {
+  docs: T[];
 
-export function Paginated<T>(classRef: Type<T>): any {
-  @ObjectType()
-  abstract class PaginatedType {
-    @Field(type => [classRef], { nullable: true })
-    docs: T[];
+  totalDocs: number;
 
-    @Field(type => Int)
-    totalDocs: number;
+  limit: number;
 
-    @Field(type => Int)
-    limit: number;
+  page?: number;
 
-    @Field(type => Int, { nullable: true })
-    page?: number;
+  totalPages: number;
 
-    @Field(type => Int)
-    totalPages: number;
+  nextPage?: number;
 
-    @Field(type => Int, { nullable: true })
-    nextPage?: number;
+  prevPage?: number;
 
-    @Field(type => Int, { nullable: true })
-    prevPage?: number;
+  pagingCounter: number;
 
-    @Field(type => Int)
-    pagingCounter: number;
+  hasPrevPage: boolean;
 
-    @Field()
-    hasPrevPage: boolean;
-
-    @Field()
-    hasNextPage: boolean;
-  }
-
-  return PaginatedType;
+  hasNextPage: boolean;
 }

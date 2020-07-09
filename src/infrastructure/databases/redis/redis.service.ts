@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import redis from 'redis';
 import { ConfigService } from '@nestjs/config';
+import redis from 'redis';
 
 @Injectable()
 export class RedisService {
@@ -29,9 +29,8 @@ export class RedisService {
 
   async exist(key: string): Promise<boolean> {
     const promise = new Promise<boolean>((resolve, reject) => {
-      this.client.exists(key, (e, ok) => {
-        resolve(Boolean(ok));
-        reject(e);
+      this.client.exists(key, (err, ok) => {
+        err ? reject(err) : resolve(Boolean(ok));
       });
     });
 
@@ -39,18 +38,22 @@ export class RedisService {
   }
 
   async get(key: string): Promise<any> {
-    return this.client.get(key, e => {
-      if (e) {
-        throw new Error(e.toString());
-      }
+    const promise = new Promise((resolve, reject) => {
+      this.client.get(key, (err, reply) => {
+        err ? reject(err) : resolve(JSON.parse(reply));
+      });
     });
+
+    return promise;
   }
 
   async delete(key: string): Promise<boolean> {
-    return this.client.del(key, e => {
-      if (e) {
-        throw new Error(e.toString());
-      }
+    const promise = new Promise<boolean>((resolve, reject) => {
+      this.client.del(key, (err, reply) => {
+        err ? reject(err) : resolve(!!reply);
+      });
     });
+
+    return promise;
   }
 }

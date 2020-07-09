@@ -3,6 +3,8 @@ export enum ModelsEnum {
   ITEM = 'Item',
   DOCUMENT_HISTORY = 'DocumentHistory',
   SHARE = 'Share',
+  MESSAGE = 'Message',
+  ROOM = 'Room',
 }
 
 export const getModelsArray = () => {

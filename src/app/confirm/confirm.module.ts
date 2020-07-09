@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { TokenModule } from '../auth/token/token.module';
 import { MailModule } from '../../infrastructure/mail/mail.module';
-import { ConfirmService } from './confirm.service';
 import { ConfigModule } from '@nestjs/config';
+import { ConfirmService } from './confirm.service';
 
 @Module({
-  imports: [MailModule, TokenModule, ConfigModule],
+  imports: [MailModule, ConfigModule],
   providers: [ConfirmService],
   exports: [ConfirmService],
 })
