@@ -2,7 +2,7 @@
 // import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 // import { ItemType } from './types/item.type';
 // import { PaginateItems } from './types/paginate-items.type';
-// import { ItemArgs } from './dto/item.args';
+// import { QueryItemDto } from './dto/item.args';
 // import { CreateItemDto } from './dto/create-item.dto';
 //
 // @Resolver(of => ItemType)
@@ -10,12 +10,12 @@
 //   constructor(private readonly itemService: ItemService) {}
 //
 //   @Query(returns => PaginateItems)
-//   async items(@Args() args: ItemArgs): Promise<PaginateItems> {
+//   async items(@Args() args: QueryItemDto): Promise<PaginateItems> {
 //     return this.itemService.get(args);
 //   }
 //
 //   @Query(returns => PaginateItems)
-//   async itemsByUser(@Args() args: ItemArgs): Promise<PaginateItems> {
+//   async itemsByUser(@Args() args: QueryItemDto): Promise<PaginateItems> {
 //     return this.itemService.getByUser('', args);
 //   }
 //

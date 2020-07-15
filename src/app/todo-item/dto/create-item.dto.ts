@@ -1,8 +1,9 @@
-import { statusEnum } from '../enums/status.enum';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
-import mongoose from 'mongoose';
+import { IsEnum, IsString } from 'class-validator';
 import { Field, InputType } from '@nestjs/graphql';
+
+import { itemStatusEnum } from '../item.entity';
+import { Expose } from 'class-transformer';
 
 @InputType()
 export class CreateItemDto {
@@ -17,14 +18,12 @@ export class CreateItemDto {
   description: string;
 
   @Field()
-  @ApiPropertyOptional({ enum: statusEnum })
-  @IsEnum(statusEnum)
+  @ApiPropertyOptional({ enum: itemStatusEnum })
+  @IsEnum(itemStatusEnum)
   status: string;
 
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  userId?: mongoose.Types.ObjectId;
+  @Expose()
+  userId?: string;
 
   @Field()
   @ApiProperty()

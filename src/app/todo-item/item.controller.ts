@@ -1,79 +1,71 @@
-// import { RolesGuard } from './../auth/guards/roles.guard';
-// import {
-//   Body,
-//   Controller,
-//   Delete,
-//   Get,
-//   Param,
-//   Patch,
-//   Post,
-//   Query,
-//   ValidationPipe,
-//   UseGuards,
-//   Req,
-// } from '@nestjs/common';
-// import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-// import { ItemService } from './item.service';
-// import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
-// import { CreateItemDto } from './dto/create-item.dto';
-// import { UpdateItemDto } from './dto/update-item.dto';
-// import { VerifyToken } from '../auth/token/decorators/verify-token.decorator';
-// import { ITokenPayload } from '../auth/token/interfaces/token-payload.interface';
-// import { Roles } from '../auth/decorators/roles.decorator';
-// import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+  ValidationPipe,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-// @ApiBearerAuth()
-// @ApiTags('item')
-// @Controller('item')
-// @UseGuards(RolesGuard)
-// export class ItemController {
-//   constructor(private readonly itemService: ItemService) {}
+import { ItemService } from './item.service';
+import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
+import { CreateItemDto } from './dto/create-item.dto';
+import { UpdateItemDto } from './dto/update-item.dto';
+import { CurrentUser } from '../auth/decorators/user.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
-//   @Get('/')
-//   @UseGuards(JwtAuthGuard)
-//   @Roles('admin')
-//   async get(
-//     @VerifyToken() tokenUser: ITokenPayload,
-//     @Query(new ValidationPipe()) pagination: PaginationOptions,
-//   ) {
-//     return this.itemService.getByUser(tokenUser._id, pagination);
-//   }
+@ApiBearerAuth()
+@ApiTags('item')
+@Controller('item')
+export class ItemController {
+  constructor(private readonly itemService: ItemService) {}
 
-//   @Post('/')
-//   async create(
-//     @VerifyToken() tokenUser: ITokenPayload,
-//     @Body(new ValidationPipe()) data: CreateItemDto,
-//   ) {
-//     return this.itemService.create(tokenUser._id, data);
-//   }
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('/')
+  async get(
+    @CurrentUser() user,
+    @Query(new ValidationPipe()) pagination: PaginationOptions,
+  ) {
+    return this.itemService.getByUser(user, pagination);
+  }
 
-//   @Patch('/:id')
-//   async update(
-//     @VerifyToken() tokenUser: ITokenPayload,
-//     @Param('id') id: string,
-//     @Body(new ValidationPipe()) data: UpdateItemDto,
-//   ) {
-//     return this.itemService.update(tokenUser._id, id, data);
-//   }
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('/')
+  async create(
+    @CurrentUser() user,
+    @Body(new ValidationPipe()) data: CreateItemDto,
+  ) {
+    return this.itemService.create(user, data);
+  }
 
-//   @Get('/shared')
-//   async getSharedItems(
-//     @VerifyToken() tokenUser: ITokenPayload,
-//     @Query() pagination: PaginationOptions,
-//   ) {
-//     return this.itemService.getSharedItems(tokenUser._id, pagination);
-//   }
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Patch('/:id')
+  async update(
+    @CurrentUser() user,
+    @Param('id') id: string,
+    @Body(new ValidationPipe()) data: UpdateItemDto,
+  ) {
+    return this.itemService.update(user, id, data);
+  }
 
-//   @Get('/history/:id')
-//   async getHistoryBy(
-//     @Param('id') id: string,
-//     @Query() pagination: PaginationOptions,
-//   ) {
-//     return this.itemService.getHistoryBy(id, pagination);
-//   }
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('/shared')
+  async getSharedItems(
+    @CurrentUser() user,
+    @Query() pagination: PaginationOptions,
+  ) {
+    return this.itemService.getSharedItems(user, pagination);
+  }
 
-//   @Delete('/:id')
-//   delete(@VerifyToken() tokenUser: ITokenPayload, @Param('id') id: string) {
-//     return this.itemService.delete(tokenUser._id, id);
-//   }
-// }
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Delete('/:id')
+  delete(@CurrentUser() user, @Param('id') id: string) {
+    return this.itemService.delete(user, id);
+  }
+}

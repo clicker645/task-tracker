@@ -1,47 +1,10 @@
-import { PaginatedType } from './../pagination/pagination.output';
-import { PaginateModel, Document, FilterQuery, PaginateResult } from 'mongoose';
+import { PaginateModel, Document, FilterQuery } from 'mongoose';
+
+import { PaginatedType } from '../pagination/pagination.output';
 import { PaginationOptions } from '../pagination/paginate.params';
-import {
-  IBaseRepository,
-  IBaseRepositoryDDD,
-} from '../../base.repository.interface';
+import { IBaseRepository } from '../../base.repository.interface';
 
-export class BaseRepository<T extends Document, R>
-  implements IBaseRepository<T, R> {
-  private model: PaginateModel<T>;
-
-  constructor(model: PaginateModel<T>) {
-    this.model = model;
-  }
-
-  async findById(id: string): Promise<T> {
-    return await this.model.findById(id).exec();
-  }
-
-  async delete(_id: string): Promise<any> {
-    const condition: FilterQuery<{}> = { _id };
-    return this.model.deleteOne(condition);
-  }
-
-  async update(_id: string, payload: Partial<T>): Promise<T> {
-    const condition: FilterQuery<{}> = { _id };
-    return this.model.updateOne(condition, payload);
-  }
-
-  async create(createDto: R): Promise<T> {
-    return await this.model.create(createDto);
-  }
-
-  async findAll(
-    query: FilterQuery<T>,
-    pagination: PaginationOptions,
-  ): Promise<PaginateResult<T>> {
-    return await this.model.paginate(query, pagination);
-  }
-}
-
-export class BaseRepositoryDDD<T extends Document>
-  implements IBaseRepositoryDDD<T> {
+export class BaseRepository<T extends Document> implements IBaseRepository<T> {
   protected model: PaginateModel<T>;
 
   constructor(model: PaginateModel<T>) {
@@ -62,6 +25,10 @@ export class BaseRepositoryDDD<T extends Document>
 
   async create(payload: T): Promise<T> {
     return await this.model.create(payload);
+  }
+
+  async findOne(query: FilterQuery<T>): Promise<T> {
+    return this.model.findOne(query);
   }
 
   async findAll(

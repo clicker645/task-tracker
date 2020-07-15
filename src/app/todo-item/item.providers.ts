@@ -1,32 +1,27 @@
-import { ModelsEnum } from '../../models/models.enum';
 import { Connection, PaginateModel } from 'mongoose';
+
 import { mongooseConnection } from '../../infrastructure/databases/mongoose/mongoose.provider';
-import { ItemSchema } from './repositories/mongoose/schemas/item.schema';
-import { ItemRepository } from './repositories/mongoose/item.repository';
-import { IItem } from './interfaces/item.interface';
+import { MongooseItemRepository } from './repositories/mongoose/mongoose.item.repository';
 import { ItemService } from './item.service';
 import { ShareService } from '../share/share.service';
-import { DocumentHistoryService } from '../../infrastructure/databases/mongoose/document-history/document-history.service';
+import { DocumentHistoryService } from '../document-history/document-history.service';
+import { Item, ItemSchema } from './item.entity';
+import { modelsEnum } from '../../models/models.enum';
 
 export const itemProviders = [
   {
-    provide: ModelsEnum.ITEM,
-    useFactory: (connection: Connection) =>
-      connection.model(ModelsEnum.ITEM, ItemSchema),
-    inject: [mongooseConnection],
-  },
-  {
-    provide: ItemRepository,
-    useFactory: (model: PaginateModel<IItem>) => {
-      return new ItemRepository(model);
+    provide: MongooseItemRepository,
+    useFactory: (connection: Connection) => {
+      const itemModel = connection.model(modelsEnum.ITEM, ItemSchema);
+      return new MongooseItemRepository(itemModel as PaginateModel<Item>);
     },
-    inject: [ModelsEnum.ITEM],
+    inject: [mongooseConnection],
   },
   {
     provide: ItemService,
     useFactory: (repository, authService, shareService, docHistoryService) => {
       return new ItemService(repository, shareService, docHistoryService);
     },
-    inject: [ItemRepository, ShareService, DocumentHistoryService],
+    inject: [MongooseItemRepository, ShareService, DocumentHistoryService],
   },
 ];

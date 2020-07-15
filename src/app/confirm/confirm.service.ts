@@ -1,10 +1,11 @@
-import { JwtService } from '@nestjs/jwt';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+
 import { ResetPasswordTemplate } from '../../infrastructure/mail/templates/reset-password.template';
 import { ConfirmTemplate } from '../../infrastructure/mail/templates/confirm.template';
 import { MailService } from '../../infrastructure/mail/mail.service';
-import { ConfigService } from '@nestjs/config';
-import { User } from '../user/domain/user.model';
+import { User } from '../user/user.entity';
 
 export const MessageType = {
   Reset: {
@@ -33,21 +34,14 @@ export class ConfirmService {
   ) {}
 
   async send(user: User, messageType: MessageType): Promise<boolean> {
-    let confirmToken = null;
-
-    try {
-      confirmToken = 'asd';
-    } catch (e) {
-      throw new Error(e);
-    }
+    // TODO
+    const confirmToken = 'TODO';
 
     const confirmLink =
-      this.configService.get<string>('FE_APP_URL') +
-      messageType.path +
-      confirmToken;
+      this.configService.get('FE_APP_URL') + messageType.path + confirmToken;
 
     const mailData = {
-      from: this.configService.get<string>('ADMIN_MAIL'),
+      from: this.configService.get('ADMIN_MAIL'),
       to: user.email,
       subject: messageType.subject,
       html: messageType.html(user.login, confirmLink),

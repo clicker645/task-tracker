@@ -1,15 +1,8 @@
-export enum ModelsEnum {
+export enum modelsEnum {
   USER = 'User',
   ITEM = 'Item',
   DOCUMENT_HISTORY = 'DocumentHistory',
-  SHARE = 'Share',
+  SHARE_ITEM = 'ShareItem',
   MESSAGE = 'Message',
   ROOM = 'Room',
 }
-
-export const getModelsArray = () => {
-  const data = [];
-  for (const [, model] of Object.keys(ModelsEnum)) {
-    data.push(model);
-  }
-};

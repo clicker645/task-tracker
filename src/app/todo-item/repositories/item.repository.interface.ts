@@ -1,8 +1,7 @@
 import { PaginationOptions } from '../../../infrastructure/databases/mongoose/pagination/paginate.params';
-import { IItem } from '../interfaces/item.interface';
-import { CreateItemDto } from '../dto/create-item.dto';
 import { IBaseRepository } from '../../../infrastructure/databases/base.repository.interface';
+import { Item } from '../item.entity';
 
-export interface IItemRepository extends IBaseRepository<IItem, CreateItemDto> {
-  getByUser(userId: string, pagination: PaginationOptions);
+export interface IItemRepository extends IBaseRepository<Item> {
+  getByUserId(userId: string, pagination: PaginationOptions);
 }

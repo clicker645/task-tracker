@@ -1,30 +1,30 @@
-import { ModelsEnum } from '../../models/models.enum';
 import { Connection, PaginateModel } from 'mongoose';
+
+import { modelsEnum } from '../../models/models.enum';
 import { mongooseConnection } from '../../infrastructure/databases/mongoose/mongoose.provider';
-import { ShareItem } from './repositories/mongoose/schemas/share-item.schema';
-import { ShareRepository } from './repositories/mongoose/share.repository';
-import { IShareItem } from './interfaces/share-item.interface';
+import { MongooseShareRepository } from './repositories/mongoose/mongoose.share.repository';
 import { ShareService } from './share.service';
+import { ShareItem, ShareItemSchema } from './share-item.entity';
 
 export const shareProviders = [
   {
-    provide: ModelsEnum.SHARE,
-    useFactory: (connection: Connection) =>
-      connection.model(ModelsEnum.SHARE, ShareItem),
-    inject: [mongooseConnection],
-  },
-  {
-    provide: ShareRepository,
-    useFactory: (model: PaginateModel<IShareItem>) => {
-      return new ShareRepository(model);
+    provide: MongooseShareRepository,
+    useFactory: (connection: Connection) => {
+      const shareItemModel = connection.model(
+        modelsEnum.SHARE_ITEM,
+        ShareItemSchema,
+      );
+      return new MongooseShareRepository(
+        shareItemModel as PaginateModel<ShareItem>,
+      );
     },
-    inject: [ModelsEnum.SHARE],
+    inject: [mongooseConnection],
   },
   {
     provide: ShareService,
     useFactory: repository => {
       return new ShareService(repository);
     },
-    inject: [ShareRepository],
+    inject: [MongooseShareRepository],
   },
 ];

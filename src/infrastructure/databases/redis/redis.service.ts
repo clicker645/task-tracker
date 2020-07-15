@@ -7,7 +7,7 @@ export class RedisService {
   private client: redis.RedisClient;
   constructor(private readonly configService: ConfigService) {
     this.client = redis.createClient({
-      host: configService.get<string>('REDIS_HOST'),
+      host: configService.get('REDIS_HOST'),
       port: configService.get<number>('REDIS_PORT'),
       db: configService.get<number>('REDIS_DB'),
     });
@@ -28,32 +28,26 @@ export class RedisService {
   }
 
   async exist(key: string): Promise<boolean> {
-    const promise = new Promise<boolean>((resolve, reject) => {
+    return new Promise<boolean>((resolve, reject) => {
       this.client.exists(key, (err, ok) => {
         err ? reject(err) : resolve(Boolean(ok));
       });
     });
-
-    return promise;
   }
 
   async get(key: string): Promise<any> {
-    const promise = new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       this.client.get(key, (err, reply) => {
         err ? reject(err) : resolve(JSON.parse(reply));
       });
     });
-
-    return promise;
   }
 
   async delete(key: string): Promise<boolean> {
-    const promise = new Promise<boolean>((resolve, reject) => {
+    return new Promise<boolean>((resolve, reject) => {
       this.client.del(key, (err, reply) => {
         err ? reject(err) : resolve(!!reply);
       });
     });
-
-    return promise;
   }
 }

@@ -1,16 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
-import mongoose from 'mongoose';
-import { AccessType } from '../enums/access-type.enum';
+import { AccessType } from '../share-item.entity';
 
 export class CreateShareItemDto {
   @ApiProperty()
   @IsString()
-  itemId: mongoose.Types.ObjectId;
+  itemId: string;
 
   @ApiProperty()
   @IsString()
-  userId: mongoose.Types.ObjectId;
+  userId: string;
 
   @ApiProperty({ enum: AccessType })
   @IsNumber()

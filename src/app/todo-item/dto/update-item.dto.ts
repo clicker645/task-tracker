@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
-import { statusEnum } from '../enums/status.enum';
+
+import { itemStatusEnum } from '../item.entity';
 
 export class UpdateItemDto {
   @ApiPropertyOptional()
@@ -13,9 +14,9 @@ export class UpdateItemDto {
   @IsString()
   readonly description: string;
 
-  @ApiPropertyOptional({ enum: statusEnum })
+  @ApiPropertyOptional({ enum: itemStatusEnum })
   @IsOptional()
-  @IsEnum(statusEnum)
+  @IsEnum(itemStatusEnum)
   readonly status: string;
 
   @ApiPropertyOptional()

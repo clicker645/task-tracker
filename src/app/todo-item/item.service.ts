@@ -3,18 +3,20 @@ import {
   ForbiddenException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { PaginateResult } from 'mongoose';
-import { IItem } from './interfaces/item.interface';
+
 import { CreateItemDto } from './dto/create-item.dto';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
 import { ShareService } from '../share/share.service';
-import { AccessType } from '../share/enums/access-type.enum';
-import { DocumentHistoryService } from '../../infrastructure/databases/mongoose/document-history/document-history.service';
-import { ModelsEnum } from '../../models/models.enum';
-import { IDocumentHistory } from '../../infrastructure/databases/mongoose/document-history/interfaces/document-history.interface';
+import { DocumentHistoryService } from '../document-history/document-history.service';
+import { modelsEnum } from '../../models/models.enum';
 import { dictionary } from '../../config/dictionary';
-import mongoose from 'mongoose';
 import { IItemRepository } from './repositories/item.repository.interface';
+import { Item } from './item.entity';
+import { User } from '../user/user.entity';
+import { PaginatedType } from '../../infrastructure/databases/mongoose/pagination/pagination.output';
+import { QueryItemDto } from './dto/query-item.dto';
+import { UpdateItemDto } from './dto/update-item.dto';
+import { AccessType } from '../share/share-item.entity';
 
 export class ItemService {
   constructor(
@@ -23,39 +25,33 @@ export class ItemService {
     private readonly docHistoryService: DocumentHistoryService,
   ) {}
 
-  async create(currentUserId: string, dto: CreateItemDto): Promise<IItem> {
+  async create(user: User, dto: CreateItemDto): Promise<Item> {
     try {
-      if (!dto.userId) {
-        dto.userId = mongoose.Types.ObjectId(currentUserId);
-      }
-
-      if (currentUserId !== dto.userId.toString()) {
-        throw new BadRequestException(
-          dictionary.errors.createItemForAnotherUserError,
-        );
-      }
-
-      return await this.itemRepository.create(dto);
+      dto.userId = user._id;
+      return await this.itemRepository.create(dto as Item);
     } catch (e) {
       throw new BadRequestException(e);
     }
   }
 
-  async get(pagination: PaginationOptions): Promise<PaginateResult<IItem>> {
+  async findAll(
+    queryParams: QueryItemDto,
+    pagination: PaginationOptions,
+  ): Promise<PaginatedType<Item>> {
     try {
-      return this.itemRepository.findAll({}, pagination);
+      return this.itemRepository.findAll(queryParams, pagination);
     } catch (e) {
       throw new InternalServerErrorException(e);
     }
   }
 
   async getSharedItems(
-    currentUserId: string,
+    user: User,
     pagination: PaginationOptions,
-  ): Promise<PaginateResult<IItem>> {
+  ): Promise<PaginatedType<Item>> {
     const sharedItemsId: string[] = [];
     const data = await this.shareService.getSharedItemByUser(
-      currentUserId,
+      user._id,
       pagination,
     );
     data.docs.forEach(sharedItem => {
@@ -75,36 +71,31 @@ export class ItemService {
   }
 
   async getByUser(
-    currentUserId: string,
+    user: User,
     pagination: PaginationOptions,
-  ): Promise<PaginateResult<IItem>> {
+  ): Promise<PaginatedType<Item>> {
     try {
-      return this.itemRepository.getByUser(currentUserId, pagination);
+      return this.itemRepository.getByUserId(user._id, pagination);
     } catch (e) {
       throw new BadRequestException(e);
     }
   }
 
-  async update(
-    currentUserId: string,
-    _id: string,
-    payload: Partial<IItem>,
-  ): Promise<IItem> {
+  async update(user: User, _id: string, payload: UpdateItemDto): Promise<Item> {
     const currentItem = await this.itemRepository.findById(_id);
 
-    if (
-      currentItem.userId.toString() === currentUserId.toString() ||
-      (await this.shareService.checkPermission(
-        currentUserId,
-        currentItem._id,
-        AccessType.ReadWrite,
-      ))
-    ) {
+    const accessIsAllowed = await this.shareService.checkPermission(
+      user._id,
+      currentItem._id,
+      AccessType.ReadWrite,
+    );
+
+    if (currentItem.userId === user._id || accessIsAllowed) {
       try {
         const oldItem = await this.itemRepository.findById(_id);
         const result = await this.itemRepository.update(_id, payload);
         this.docHistoryService
-          .saveChangeHistory(ModelsEnum.ITEM, currentUserId, oldItem, payload)
+          .saveChangeHistory(modelsEnum.ITEM, user._id, oldItem, payload)
           .catch(e => {
             console.log(e);
           });
@@ -118,10 +109,10 @@ export class ItemService {
     throw new ForbiddenException(dictionary.errors.permissionForModifyError);
   }
 
-  async delete(currentUserId: string, _id: string): Promise<any> {
+  async delete(user: User, _id: string): Promise<any> {
     try {
       const currentItem = await this.itemRepository.findById(_id);
-      if (currentUserId !== currentItem.userId.toString()) {
+      if (user._id !== currentItem.userId) {
         throw new ForbiddenException(
           dictionary.errors.permissionForModifyError,
         );
@@ -133,14 +124,14 @@ export class ItemService {
     }
   }
 
-  async getHistoryBy(
-    id: string,
-    options: PaginationOptions,
-  ): Promise<PaginateResult<IDocumentHistory>> {
-    try {
-      return this.docHistoryService.getHistoryByDocId(id, options);
-    } catch (e) {
-      throw new InternalServerErrorException(e);
-    }
-  }
+  // async getHistoryBy(
+  //   id: string,
+  //   options: PaginationOptions,
+  // ): Promise<PaginateResult<IDocumentHistory>> {
+  //   try {
+  //     return this.docHistoryService.getHistoryByDocId(id, options);
+  //   } catch (e) {
+  //     throw new InternalServerErrorException(e);
+  //   }
+  // }
 }

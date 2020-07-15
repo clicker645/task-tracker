@@ -1,9 +1,4 @@
-import { IShareItem } from '../interfaces/share-item.interface';
-import { CreateShareItemDto } from '../dto/create-share-item.dto';
 import { IBaseRepository } from '../../../infrastructure/databases/base.repository.interface';
-import { FilterQuery } from 'mongoose';
+import { ShareItem } from '../share-item.entity';
 
-export interface IShareRepository
-  extends IBaseRepository<IShareItem, CreateShareItemDto> {
-  findOne(filter: FilterQuery<IShareItem>): Promise<IShareItem>;
-}
+export interface IShareRepository extends IBaseRepository<ShareItem> {}

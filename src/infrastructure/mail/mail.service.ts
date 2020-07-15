@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IMailGunData } from './interfaces/mail.interface';
 import nodemailer from 'nodemailer';
+
+import { IMailGunData } from './interfaces/mail.interface';
 
 @Injectable()
 export class MailService {
@@ -9,10 +10,10 @@ export class MailService {
 
   constructor(private readonly configService: ConfigService) {
     this.mailTransport = nodemailer.createTransport({
-      service: configService.get<string>('MAIL_SERVICE'),
+      service: configService.get('MAIL_SERVICE'),
       auth: {
-        user: configService.get<string>('ADMIN_MAIL'),
-        pass: configService.get<string>('ADMIN_MAIL_PASSWORD'),
+        user: configService.get('ADMIN_MAIL'),
+        pass: configService.get('ADMIN_MAIL_PASSWORD'),
       },
     });
   }

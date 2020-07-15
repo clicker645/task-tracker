@@ -2,40 +2,42 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
+
 import { CreateShareItemDto } from './dto/create-share-item.dto';
-import { IShareItem } from './interfaces/share-item.interface';
-import { PaginateResult } from 'mongoose';
 import { dictionary } from '../../config/dictionary';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
 import { IShareRepository } from './repositories/share.repository.interface';
+import { ShareItem } from './share-item.entity';
+import { User } from '../user/user.entity';
+import { PaginatedType } from '../../infrastructure/databases/mongoose/pagination/pagination.output';
 
 export class ShareService {
   constructor(private readonly shareRepository: IShareRepository) {}
 
   async create(
-    currentUserId: string,
+    user: User,
     createShareItemDto: CreateShareItemDto,
-  ): Promise<IShareItem> {
-    if (currentUserId === createShareItemDto.userId.toString()) {
+  ): Promise<ShareItem> {
+    if (user._id === createShareItemDto.userId) {
       throw new BadRequestException({
         message: dictionary.errors.shareYourselfError,
       });
     }
 
     try {
-      return await this.shareRepository.create(createShareItemDto);
+      return await this.shareRepository.create(createShareItemDto as ShareItem);
     } catch (e) {
       throw new BadRequestException(e);
     }
   }
 
   async getSharedItemByUser(
-    currentUserId: string,
+    user: User,
     pagination: PaginationOptions,
-  ): Promise<PaginateResult<IShareItem>> {
+  ): Promise<PaginatedType<ShareItem>> {
     try {
       return await this.shareRepository.findAll(
-        { userId: currentUserId },
+        { userId: user._id },
         pagination,
       );
     } catch (e) {
@@ -46,14 +48,14 @@ export class ShareService {
   async checkPermission(
     userId: string,
     itemId: string,
-    access: number,
+    accessType: number,
   ): Promise<boolean> {
     const shareItem = await this.shareRepository.findOne({
       userId,
       itemId,
     });
 
-    if (!shareItem || shareItem.accessType !== access) {
+    if (!shareItem || shareItem.accessType !== accessType) {
       return false;
     }
 
