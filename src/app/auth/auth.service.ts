@@ -6,9 +6,9 @@ import bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { ITokenStorage } from './interfaces/token.storage';
 import { dictionary } from 'src/config/dictionary';
-import { LoginResponse } from './responses/login.response';
 import { UserService } from '../user/user.service';
 import { TokenDto } from './dto/token.dto';
+import { AuthEntity } from './auth.entity';
 
 @Injectable()
 export class AuthService {
@@ -38,7 +38,7 @@ export class AuthService {
 
     const expiresIn = this.configService.get<number>('JWT_TOKEN_LIFETIME');
 
-    const response = new LoginResponse(expiresIn, jwtToken, user);
+    const response = new AuthEntity(expiresIn, jwtToken, user);
     await this.tokenStorage.set(user.id, response, expiresIn);
 
     return response;

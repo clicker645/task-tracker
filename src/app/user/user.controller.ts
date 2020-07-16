@@ -26,11 +26,6 @@ import { queryValidations } from '../../components/validation/validation.query';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('hello')
-  async hello() {
-    return 'Hello world!!';
-  }
-
   @ApiBearerAuth()
   @Get('/search/:data')
   async search(

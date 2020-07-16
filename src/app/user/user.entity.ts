@@ -1,29 +1,23 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import pagination from 'mongoose-paginate-v2';
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { userStatusEnum } from './enums/status.enum';
+import { userGenderEnum } from './enums/gender.enum';
+import { userRoleEnum } from './enums/role.enum';
+import { GqlPaginate } from '../../infrastructure/databases/mongoose/pagination/pagination.output';
 
-export enum userStatusEnum {
-  pending = 'pending',
-  active = 'active',
-  blocked = 'blocked',
-}
-
-export enum userGenderEnum {
-  male = 'male',
-  female = 'female',
-}
-
-export enum userRoleEnum {
-  user = 'user',
-  admin = 'admin',
-  quest = 'quest',
-}
-
+@ObjectType()
 @Schema()
 export class User extends Document {
+  @Field()
+  id: string;
+
+  @Field()
   @Prop({ required: true, unique: true })
   email: string;
 
+  @Field(type => userStatusEnum, { defaultValue: userStatusEnum.pending })
   @Prop({
     required: true,
     enum: Object.values(userStatusEnum),
@@ -31,12 +25,15 @@ export class User extends Document {
   })
   status: string;
 
+  @Field()
   @Prop({ required: true })
   login: string;
 
+  @Field(type => userGenderEnum)
   @Prop({ required: true, enum: Object.values(userGenderEnum) })
   gender: string;
 
+  @Field(type => userRoleEnum, { defaultValue: userRoleEnum.user })
   @Prop({
     required: true,
     enum: Object.values(userRoleEnum),
@@ -44,9 +41,13 @@ export class User extends Document {
   })
   role: string;
 
+  @Field()
   @Prop({ required: true })
   password: string;
 }
+
+@ObjectType()
+export class PaginateUser extends GqlPaginate(User) {}
 
 export const UserSchema = SchemaFactory.createForClass(User);
 

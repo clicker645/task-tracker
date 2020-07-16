@@ -1,17 +1,8 @@
 import { LoginDto } from './dto/login.dto';
-import {
-  Controller,
-  Body,
-  Post,
-  UseGuards,
-  Get,
-  Request,
-} from '@nestjs/common';
-import { ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Body, Post, UseGuards, Get } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from './guards/jwt.guard';
-import { RolesGuard } from './guards/roles.guard';
-import { Roles } from './decorators/roles.decorator';
 import { AuthService } from 'src/app/auth/auth.service';
 import { CurrentUser } from './decorators/user.decorator';
 

@@ -12,14 +12,15 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
-import { PaginatedType } from '../../infrastructure/databases/mongoose/pagination/pagination.output';
 import { QueryUserDto } from './dto/query-user.dto';
-import { ConfirmService, MessageType } from '../confirm/confirm.service';
+import { IPaginate } from '../../infrastructure/databases/mongoose/pagination/pagination.output';
+import { Queue } from 'bull';
+import { addMessageToQueue, MessageType } from '../confirm/confirm.consts';
 
 export class UserService {
   constructor(
     private readonly userRepository: IUserRepository,
-    private readonly confirmService: ConfirmService,
+    private readonly messageQueue: Queue,
   ) {}
 
   async hashPassword(password: string): Promise<string> {
@@ -45,30 +46,39 @@ export class UserService {
   }
 
   async resetPassword(payload: ResetPasswordDto): Promise<boolean> {
-    // const newPassword = await this.hashPassword(payload.password);
+    const newPassword = await this.hashPassword(payload.password);
 
-    // try {
-    //   await this.userRepository.update(jwtToken._id, {
-    //     password: newPassword,
-    //   });
-    // } catch (e) {
-    //   throw new BadRequestException(e);
-    // }
-
-    return true;
-  }
-
-  async create(createUserDto: CreateUserDto): Promise<any> {
-    createUserDto.password = await this.hashPassword(createUserDto.password);
-
+    // TODO
     try {
-      const user = await this.userRepository.create(createUserDto as User);
-      await this.confirmService.send(user, MessageType.Confirm);
+      await this.userRepository.update('USER_ID', {
+        password: newPassword,
+      });
     } catch (e) {
       throw new BadRequestException(e);
     }
 
-    return { message: dictionary.notifications.successfullyUserCreate };
+    return true;
+  }
+
+  async findOne(query: QueryUserDto): Promise<User> {
+    return this.userRepository.findOne(query);
+  }
+
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    let user = null;
+    createUserDto.password = await this.hashPassword(createUserDto.password);
+
+    try {
+      user = await this.userRepository.create(createUserDto as User);
+      await this.messageQueue.add(addMessageToQueue, {
+        user: user,
+        messageType: MessageType.Confirm,
+      });
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+
+    return user;
   }
 
   async findById(id: string): Promise<User> {
@@ -95,9 +105,9 @@ export class UserService {
     }
   }
 
-  async delete(_id: string): Promise<any> {
+  async delete(_id: string): Promise<boolean> {
     try {
-      return await this.userRepository.delete(_id);
+      return !!(await this.userRepository.delete(_id));
     } catch (e) {
       throw new InternalServerErrorException(e);
     }
@@ -106,7 +116,7 @@ export class UserService {
   async search(
     search: string,
     options: PaginationOptions,
-  ): Promise<PaginatedType<User>> {
+  ): Promise<IPaginate<User>> {
     return await this.userRepository.findAll(
       {
         $or: [
@@ -121,7 +131,7 @@ export class UserService {
   async findAll(
     queryParams: QueryUserDto,
     options: PaginationOptions,
-  ): Promise<PaginatedType<User>> {
+  ): Promise<IPaginate<User>> {
     try {
       return await this.userRepository.findAll(queryParams, options);
     } catch (e) {

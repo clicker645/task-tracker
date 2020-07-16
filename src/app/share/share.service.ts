@@ -9,7 +9,7 @@ import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagin
 import { IShareRepository } from './repositories/share.repository.interface';
 import { ShareItem } from './share-item.entity';
 import { User } from '../user/user.entity';
-import { PaginatedType } from '../../infrastructure/databases/mongoose/pagination/pagination.output';
+import { IPaginate } from '../../infrastructure/databases/mongoose/pagination/pagination.output';
 
 export class ShareService {
   constructor(private readonly shareRepository: IShareRepository) {}
@@ -34,7 +34,7 @@ export class ShareService {
   async getSharedItemByUser(
     user: User,
     pagination: PaginationOptions,
-  ): Promise<PaginatedType<ShareItem>> {
+  ): Promise<IPaginate<ShareItem>> {
     try {
       return await this.shareRepository.findAll(
         { userId: user._id },

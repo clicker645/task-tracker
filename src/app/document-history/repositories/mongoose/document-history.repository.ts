@@ -4,7 +4,7 @@ import { IHistoryRepository } from '../document-history.repository.interface';
 import { BaseRepository } from '../../../../infrastructure/databases/mongoose/repository/base.repository';
 import { PaginationOptions } from '../../../../infrastructure/databases/mongoose/pagination/paginate.params';
 import { DocumentHistory } from '../../document-history.entity';
-import { PaginatedType } from '../../../../infrastructure/databases/mongoose/pagination/pagination.output';
+import { IPaginate } from '../../../../infrastructure/databases/mongoose/pagination/pagination.output';
 
 export class MongooseDocumentHistoryRepository
   extends BaseRepository<DocumentHistory>
@@ -16,7 +16,7 @@ export class MongooseDocumentHistoryRepository
   async getHistoryByDocId(
     _id: string,
     options: PaginationOptions,
-  ): Promise<PaginatedType<DocumentHistory>> {
+  ): Promise<IPaginate<DocumentHistory>> {
     return await this.historyModel.paginate(
       {
         document: _id,

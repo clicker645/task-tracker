@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { ArgsType, Field, ID } from '@nestjs/graphql';
+import { ArgsType, Field, Int } from '@nestjs/graphql';
 import { Expose } from 'class-transformer';
 
 @ArgsType()
@@ -26,17 +26,17 @@ export class PaginationOptions implements mongoose.PaginateOptions {
   leanWithId?: boolean;
 
   @ApiPropertyOptional()
-  @Field(type => ID, { nullable: true })
+  @Field(type => Int, { nullable: true })
   @Expose()
   offset?: number;
 
   @ApiPropertyOptional()
-  @Field(type => ID, { nullable: true })
+  @Field(type => Int, { nullable: true })
   @Expose()
   page?: number;
 
   @ApiPropertyOptional()
-  @Field(type => ID, { nullable: true })
+  @Field(type => Int, { nullable: true })
   @Expose()
   limit?: number;
 
@@ -46,7 +46,7 @@ export class PaginationOptions implements mongoose.PaginateOptions {
   pagination?: boolean;
 
   @ApiPropertyOptional({ type: [String] })
-  @Field(type => [String], { nullable: true })
+  @Field(type => [String], { nullable: 'itemsAndList' })
   @Expose()
   populate?: string[];
 }

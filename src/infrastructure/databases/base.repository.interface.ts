@@ -1,6 +1,6 @@
 import { FilterQuery } from 'mongoose';
 
-import { PaginatedType } from './mongoose/pagination/pagination.output';
+import { IPaginate } from './mongoose/pagination/pagination.output';
 import { PaginationOptions } from './mongoose/pagination/paginate.params';
 
 export interface IBaseRepository<T> {
@@ -12,5 +12,5 @@ export interface IBaseRepository<T> {
   findAll(
     query: FilterQuery<T>,
     pagination: PaginationOptions,
-  ): Promise<PaginatedType<T>>;
+  ): Promise<IPaginate<T>>;
 }

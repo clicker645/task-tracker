@@ -13,10 +13,10 @@ import { dictionary } from '../../config/dictionary';
 import { IItemRepository } from './repositories/item.repository.interface';
 import { Item } from './item.entity';
 import { User } from '../user/user.entity';
-import { PaginatedType } from '../../infrastructure/databases/mongoose/pagination/pagination.output';
 import { QueryItemDto } from './dto/query-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { AccessType } from '../share/share-item.entity';
+import { IPaginate } from '../../infrastructure/databases/mongoose/pagination/pagination.output';
 
 export class ItemService {
   constructor(
@@ -37,7 +37,7 @@ export class ItemService {
   async findAll(
     queryParams: QueryItemDto,
     pagination: PaginationOptions,
-  ): Promise<PaginatedType<Item>> {
+  ): Promise<IPaginate<Item>> {
     try {
       return this.itemRepository.findAll(queryParams, pagination);
     } catch (e) {
@@ -48,7 +48,7 @@ export class ItemService {
   async getSharedItems(
     user: User,
     pagination: PaginationOptions,
-  ): Promise<PaginatedType<Item>> {
+  ): Promise<IPaginate<Item>> {
     const sharedItemsId: string[] = [];
     const data = await this.shareService.getSharedItemByUser(
       user._id,
@@ -73,7 +73,7 @@ export class ItemService {
   async getByUser(
     user: User,
     pagination: PaginationOptions,
-  ): Promise<PaginatedType<Item>> {
+  ): Promise<IPaginate<Item>> {
     try {
       return this.itemRepository.getByUserId(user._id, pagination);
     } catch (e) {

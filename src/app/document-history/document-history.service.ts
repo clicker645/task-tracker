@@ -3,8 +3,8 @@ import { Document } from 'mongoose';
 import { DocumentHistoryDto } from './dto/create-document-history.dto';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
 import { IHistoryRepository } from './repositories/document-history.repository.interface';
-import { PaginatedType } from '../../infrastructure/databases/mongoose/pagination/pagination.output';
 import { DocumentHistory } from './document-history.entity';
+import { IPaginate } from '../../infrastructure/databases/mongoose/pagination/pagination.output';
 
 export class DocumentHistoryService {
   constructor(private readonly docHistoryRepository: IHistoryRepository) {}
@@ -34,7 +34,7 @@ export class DocumentHistoryService {
   async getHistoryByDocId(
     id: string,
     options: PaginationOptions,
-  ): Promise<PaginatedType<DocumentHistory>> {
+  ): Promise<IPaginate<DocumentHistory>> {
     return await this.docHistoryRepository.getHistoryByDocId(id, options);
   }
 }

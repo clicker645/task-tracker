@@ -1,8 +1,15 @@
-import { User } from '../../user/user.entity';
+import { User } from '../user/user.entity';
+import { Field, ObjectType } from '@nestjs/graphql';
 
-export class LoginResponse {
+@ObjectType()
+export class AuthEntity {
+  @Field()
   expiresIn: number;
+
+  @Field()
   jwt: string;
+
+  @Field(type => User)
   user: User;
 
   constructor(expiresIn: number, jwt: string, user: User) {

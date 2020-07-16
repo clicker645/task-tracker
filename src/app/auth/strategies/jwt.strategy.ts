@@ -3,8 +3,8 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { LoginResponse } from '../responses/login.response';
 import { ITokenStorage } from '../interfaces/token.storage';
+import { AuthEntity } from '../auth.entity';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
 
-    const loginResponse = (await this.tokenStorage.get(id)) as LoginResponse;
+    const loginResponse = (await this.tokenStorage.get(id)) as AuthEntity;
     if (!loginResponse) {
       throw new UnauthorizedException();
     }

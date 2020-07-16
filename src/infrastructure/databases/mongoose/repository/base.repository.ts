@@ -1,8 +1,8 @@
 import { PaginateModel, Document, FilterQuery } from 'mongoose';
 
-import { PaginatedType } from '../pagination/pagination.output';
 import { PaginationOptions } from '../pagination/paginate.params';
 import { IBaseRepository } from '../../base.repository.interface';
+import { IPaginate } from '../pagination/pagination.output';
 
 export class BaseRepository<T extends Document> implements IBaseRepository<T> {
   protected model: PaginateModel<T>;
@@ -34,7 +34,7 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
   async findAll(
     query: FilterQuery<T>,
     pagination: PaginationOptions,
-  ): Promise<PaginatedType<T>> {
+  ): Promise<IPaginate<T>> {
     return await this.model.paginate(query, pagination);
   }
 }

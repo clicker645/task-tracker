@@ -4,9 +4,9 @@ import { Connection, PaginateModel } from 'mongoose';
 import { MongooseUserRepository } from './repositories/mongoose/mognoose.user.repository';
 import { User, UserSchema } from './user.entity';
 import { mongooseConnection } from '../../infrastructure/databases/mongoose/mongoose.provider';
-import { UserService } from './user.service';
 import { modelsEnum } from '../../models/models.enum';
-import { ConfirmService } from '../confirm/confirm.service';
+import { UserService } from './user.service';
+import { JwtService } from '@nestjs/jwt';
 
 export const userProviders: Provider[] = [
   {
@@ -19,9 +19,9 @@ export const userProviders: Provider[] = [
   },
   {
     provide: UserService,
-    useFactory: (repository, confirmService) => {
-      return new UserService(repository, confirmService);
+    useFactory: (repository, queue) => {
+      return new UserService(repository, queue);
     },
-    inject: [MongooseUserRepository, ConfirmService],
+    inject: [MongooseUserRepository],
   },
 ];
