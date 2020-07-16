@@ -30,11 +30,11 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @IsEnum(userGenderEnum)
-  @Field(type => userGenderEnum)
+  @Field(() => userGenderEnum)
   readonly gender: string;
 
   @ApiPropertyOptional({ enum: userRoleEnum })
-  @Field(type => userRoleEnum, { defaultValue: userRoleEnum.user })
+  @Field(() => userRoleEnum, { defaultValue: userRoleEnum.user })
   readonly role: string;
 
   @IsString()

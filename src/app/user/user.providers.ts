@@ -6,7 +6,6 @@ import { User, UserSchema } from './user.entity';
 import { mongooseConnection } from '../../infrastructure/databases/mongoose/mongoose.provider';
 import { modelsEnum } from '../../models/models.enum';
 import { UserService } from './user.service';
-import { JwtService } from '@nestjs/jwt';
 
 export const userProviders: Provider[] = [
   {

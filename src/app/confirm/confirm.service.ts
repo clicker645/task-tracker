@@ -1,24 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-
-import { ResetPasswordTemplate } from '../../infrastructure/mail/templates/reset-password.template';
-import { ConfirmTemplate } from '../../infrastructure/mail/templates/confirm.template';
 import { MailService } from '../../infrastructure/mail/mail.service';
 import { User } from '../user/user.entity';
-
-export const MessageType = {
-  Reset: {
-    subject: 'Reset Password',
-    path: `${process.env.PATH_TO_RESET_PASS_PAGE}?token=`,
-    html: ResetPasswordTemplate,
-  },
-  Confirm: {
-    subject: 'Verify User',
-    path: '/auth/confirm?token=',
-    html: ConfirmTemplate,
-  },
-};
+import { Process, Processor } from '@nestjs/bull';
+import { Job } from 'bull';
+import { addMessageToQueue, queueMessage } from './confirm.consts';
 
 declare type MessageType = {
   subject: string;
@@ -27,31 +13,37 @@ declare type MessageType = {
 };
 
 @Injectable()
+@Processor(queueMessage)
 export class ConfirmService {
   constructor(
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
   ) {}
 
-  async send(user: User, messageType: MessageType): Promise<boolean> {
-    // TODO
-    const confirmToken = 'TODO';
-
-    const confirmLink =
-      this.configService.get('FE_APP_URL') + messageType.path + confirmToken;
-
-    const mailData = {
-      from: this.configService.get('ADMIN_MAIL'),
-      to: user.email,
-      subject: messageType.subject,
-      html: messageType.html(user.login, confirmLink),
-    };
-
-    try {
-      await this.mailService.send(mailData);
-    } catch (e) {
-      throw new Error(e);
-    }
+  @Process(addMessageToQueue)
+  async send(job: Job<{ user: User; messageType: MessageType }>) {
+    console.log(job.data);
+    console.log(job);
+    // // TODO
+    // const confirmToken = 'TODO';
+    //
+    // const confirmLink =
+    //   this.configService.get('FE_APP_URL') +
+    //   job.data.messageType.path +
+    //   confirmToken;
+    //
+    // const mailData = {
+    //   from: this.configService.get('ADMIN_MAIL'),
+    //   to: job.data.user.email,
+    //   subject: job.data.messageType.subject,
+    //   html: job.data.messageType.html(job.data.user.login, confirmLink),
+    // };
+    //
+    // try {
+    //   await this.mailService.send(mailData);
+    // } catch (e) {
+    //   throw new Error(e);
+    // }
 
     return true;
   }

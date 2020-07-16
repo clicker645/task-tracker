@@ -21,10 +21,6 @@ export class AuthService {
 
   async login(payload: LoginDto) {
     const user = await this.userService.findByEmail(payload.email);
-    if (!user) {
-      throw new BadRequestException(dictionary.errors.userNotFound);
-    }
-
     const isCompare = await bcrypt.compare(payload.password, user.password);
     if (!isCompare) {
       throw new BadRequestException(dictionary.errors.passwordMatchError);

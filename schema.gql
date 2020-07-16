@@ -1,0 +1,94 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: String!
+  email: String!
+  status: statuses!
+  login: String!
+  gender: gender!
+  role: roles!
+  password: String!
+}
+
+"""statuses are specific status for users in the system"""
+enum statuses {
+  pending
+  active
+  blocked
+}
+
+"""gender for users in the system"""
+enum gender {
+  male
+  female
+}
+
+"""roles are specific role for any users in the system"""
+enum roles {
+  user
+  admin
+  quest
+}
+
+type PaginateUser {
+  docs: [User!]
+  totalDocs: Int!
+  limit: Int!
+  page: Int
+  totalPages: Int!
+  nextPage: Int
+  prevPage: Int
+  pagingCounter: Int!
+  hasPrevPage: Boolean!
+  hasNextPage: Boolean!
+}
+
+type AuthEntity {
+  expiresIn: Float!
+  jwt: String!
+  user: User!
+}
+
+type Query {
+  findOneUser(login: String, email: String): User!
+  findAllUsers(select: String, sort: String, lean: Boolean, leanWithId: Boolean, offset: Int, page: Int, limit: Int, pagination: Boolean, populate: [String], login: String, email: String): PaginateUser!
+  searchUser(select: String, sort: String, lean: Boolean, leanWithId: Boolean, offset: Int, page: Int, limit: Int, pagination: Boolean, populate: [String], q: String!): PaginateUser!
+  login(email: String!, password: String!): AuthEntity!
+  me: User!
+}
+
+type Mutation {
+  createUser(userInputCreate: CreateUserDto!): User!
+  deleteUser(id: String!): Boolean!
+  updateUser(userInputUpdate: UpdateUserDto!, id: String!): User!
+  changePassword(userInputChangePass: ChangePasswordDto!): Boolean!
+  resetPassword(userInputResetPass: ResetPasswordDto!): Boolean!
+}
+
+input CreateUserDto {
+  email: String!
+  login: String!
+  gender: gender!
+  role: roles = user
+  password: String!
+}
+
+input UpdateUserDto {
+  email: String!
+  login: String!
+  gender: gender!
+  role: roles = user
+}
+
+input ChangePasswordDto {
+  _id: String!
+  newPassword: String!
+  oldPassword: String!
+}
+
+input ResetPasswordDto {
+  token: String!
+  password: String!
+}

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import bcrypt from 'bcrypt';
 
@@ -61,7 +62,12 @@ export class UserService {
   }
 
   async findOne(query: QueryUserDto): Promise<User> {
-    return this.userRepository.findOne(query);
+    const user = await this.userRepository.findOne(query);
+    if (!user) {
+      throw new NotFoundException(dictionary.errors.userNotFound);
+    }
+
+    return user;
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -82,19 +88,21 @@ export class UserService {
   }
 
   async findById(id: string): Promise<User> {
-    try {
-      return await this.userRepository.findById(id);
-    } catch (e) {
-      throw new InternalServerErrorException(e);
+    const user = await this.userRepository.findById(id);
+    if (!user) {
+      throw new NotFoundException(dictionary.errors.userNotFound);
     }
+
+    return user;
   }
 
   async findByEmail(email: string): Promise<User> {
-    try {
-      return await this.userRepository.findByEmail(email);
-    } catch (e) {
-      throw new InternalServerErrorException(e);
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException(dictionary.errors.userNotFound);
     }
+
+    return user;
   }
 
   async update(_id: string, payload: Partial<User>) {

@@ -26,17 +26,17 @@ export class PaginationOptions implements mongoose.PaginateOptions {
   leanWithId?: boolean;
 
   @ApiPropertyOptional()
-  @Field(type => Int, { nullable: true })
+  @Field(() => Int, { nullable: true })
   @Expose()
   offset?: number;
 
   @ApiPropertyOptional()
-  @Field(type => Int, { nullable: true })
+  @Field(() => Int, { nullable: true })
   @Expose()
   page?: number;
 
   @ApiPropertyOptional()
-  @Field(type => Int, { nullable: true })
+  @Field(() => Int, { nullable: true })
   @Expose()
   limit?: number;
 
@@ -46,7 +46,7 @@ export class PaginationOptions implements mongoose.PaginateOptions {
   pagination?: boolean;
 
   @ApiPropertyOptional({ type: [String] })
-  @Field(type => [String], { nullable: 'itemsAndList' })
+  @Field(() => [String], { nullable: 'itemsAndList' })
   @Expose()
   populate?: string[];
 }

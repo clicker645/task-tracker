@@ -11,16 +11,16 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 
-@Resolver(of => User)
+@Resolver(() => User)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
-  @Query(returns => User)
+  @Query(() => User)
   async findOneUser(@Args() query: QueryUserDto): Promise<User> {
     return this.userService.findOne(query);
   }
 
-  @Query(returns => PaginateUser)
+  @Query(() => PaginateUser)
   async findAllUsers(
     @Args(...queryValidations) query: QueryUserDto,
     @Args(...queryValidations) pagination: PaginationOptions,
@@ -28,19 +28,19 @@ export class UserResolver {
     return this.userService.findAll(query, pagination);
   }
 
-  @Mutation(returns => User)
+  @Mutation(() => User)
   async createUser(
     @Args('userInputCreate', new ValidationPipe()) dto: CreateUserDto,
   ) {
     return this.userService.create(dto);
   }
 
-  @Mutation(returns => Boolean)
-  deleteUser(@Args('id') id: string): Promise<Boolean> {
+  @Mutation(() => Boolean)
+  deleteUser(@Args('id') id: string): Promise<boolean> {
     return this.userService.delete(id);
   }
 
-  @Mutation(returns => User)
+  @Mutation(() => User)
   updateUser(
     @Args('id') id: string,
     @Args('userInputUpdate', new ValidationPipe()) payload: UpdateUserDto,
@@ -48,7 +48,7 @@ export class UserResolver {
     return this.userService.update(id, payload);
   }
 
-  @Query(returns => PaginateUser)
+  @Query(() => PaginateUser)
   searchUser(
     @Args('q') q: string,
     @Args(...queryValidations) pagination: PaginationOptions,
@@ -56,17 +56,17 @@ export class UserResolver {
     return this.userService.search(q, pagination);
   }
 
-  @Mutation(returns => Boolean)
+  @Mutation(() => Boolean)
   changePassword(
     @Args('userInputChangePass', new ValidationPipe()) dto: ChangePasswordDto,
-  ): Promise<Boolean> {
+  ): Promise<boolean> {
     return this.userService.changePassword(dto);
   }
 
-  @Mutation(returns => Boolean)
+  @Mutation(() => Boolean)
   resetPassword(
     @Args('userInputResetPass', new ValidationPipe()) dto: ResetPasswordDto,
-  ): Promise<Boolean> {
+  ): Promise<boolean> {
     return this.userService.resetPassword(dto);
   }
 }

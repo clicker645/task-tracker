@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsString } from 'class-validator';
-import { ArgsType, Field, InputType } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 
 import { userGenderEnum } from '../enums/gender.enum';
 import { userRoleEnum } from '../enums/role.enum';
@@ -20,10 +20,10 @@ export class UpdateUserDto {
   @ApiPropertyOptional()
   @IsString()
   @IsEnum(userGenderEnum)
-  @Field(type => userGenderEnum)
+  @Field(() => userGenderEnum)
   readonly gender: string;
 
   @ApiPropertyOptional({ enum: userRoleEnum })
-  @Field(type => userRoleEnum, { defaultValue: userRoleEnum.user })
+  @Field(() => userRoleEnum, { defaultValue: userRoleEnum.user })
   readonly role: string;
 }

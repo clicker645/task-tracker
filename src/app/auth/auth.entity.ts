@@ -9,7 +9,7 @@ export class AuthEntity {
   @Field()
   jwt: string;
 
-  @Field(type => User)
+  @Field(() => User)
   user: User;
 
   constructor(expiresIn: number, jwt: string, user: User) {

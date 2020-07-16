@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import pagination from 'mongoose-paginate-v2';
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
+
 import { userStatusEnum } from './enums/status.enum';
 import { userGenderEnum } from './enums/gender.enum';
 import { userRoleEnum } from './enums/role.enum';
@@ -17,7 +18,7 @@ export class User extends Document {
   @Prop({ required: true, unique: true })
   email: string;
 
-  @Field(type => userStatusEnum, { defaultValue: userStatusEnum.pending })
+  @Field(() => userStatusEnum, { defaultValue: userStatusEnum.pending })
   @Prop({
     required: true,
     enum: Object.values(userStatusEnum),
@@ -29,11 +30,11 @@ export class User extends Document {
   @Prop({ required: true })
   login: string;
 
-  @Field(type => userGenderEnum)
+  @Field(() => userGenderEnum)
   @Prop({ required: true, enum: Object.values(userGenderEnum) })
   gender: string;
 
-  @Field(type => userRoleEnum, { defaultValue: userRoleEnum.user })
+  @Field(() => userRoleEnum, { defaultValue: userRoleEnum.user })
   @Prop({
     required: true,
     enum: Object.values(userRoleEnum),

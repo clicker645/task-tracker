@@ -1,6 +1,6 @@
 import { IsString, Matches, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { ArgsType, Field, InputType } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 
 import { passwordMatchRegexp } from '../user.constants';
 import { dictionary } from '../../../config/dictionary';

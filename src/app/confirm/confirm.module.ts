@@ -1,12 +1,26 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { MailModule } from '../../infrastructure/mail/mail.module';
 import { ConfirmService } from './confirm.service';
+import { BullModule } from '@nestjs/bull';
+import { queueMessage } from './confirm.consts';
 
 @Module({
-  imports: [MailModule, ConfigModule],
+  imports: [
+    MailModule,
+    ConfigModule,
+    BullModule.registerQueueAsync({
+      name: queueMessage,
+      useFactory: (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('REDIS_HOST'),
+          port: configService.get<number>('REDIS_PORT'),
+        },
+      }),
+      inject: [ConfigService],
+    }),
+  ],
   providers: [ConfirmService],
-  exports: [ConfirmService],
 })
 export class ConfirmModule {}

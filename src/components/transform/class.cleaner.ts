@@ -1,7 +1,7 @@
-import { ArgumentMetadata, PipeTransform } from '@nestjs/common';
+import { PipeTransform } from '@nestjs/common';
 
 export class ClassCleaner implements PipeTransform {
-  transform(value: any, metadata: ArgumentMetadata): any {
+  transform(value: any): any {
     Object.entries(value).forEach(([key, objValue]) => {
       if (objValue === undefined || objValue === null) {
         delete value[key];

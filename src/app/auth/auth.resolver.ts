@@ -7,16 +7,16 @@ import { GqlAuthGuard } from './guards/gql.auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { GqlCurrentUser } from './decorators/user.decorator';
 
-@Resolver(of => AuthEntity)
+@Resolver(() => AuthEntity)
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  @Query(returns => AuthEntity)
+  @Query(() => AuthEntity)
   async login(@Args() dto: LoginDto): Promise<AuthEntity> {
     return this.authService.login(dto);
   }
 
-  @Query(returns => User)
+  @Query(() => User)
   @UseGuards(GqlAuthGuard)
   async me(@GqlCurrentUser() user): Promise<User> {
     return user;

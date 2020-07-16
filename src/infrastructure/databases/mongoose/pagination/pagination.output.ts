@@ -17,28 +17,28 @@ export interface IPaginate<T> {
 export function GqlPaginate<T>(classRef: Type<T>): any {
   @ObjectType()
   abstract class PaginationType implements IPaginate<T> {
-    @Field(type => [classRef], { nullable: true })
+    @Field(() => [classRef], { nullable: true })
     docs: T[];
 
-    @Field(type => Int)
+    @Field(() => Int)
     totalDocs: number;
 
-    @Field(type => Int)
+    @Field(() => Int)
     limit: number;
 
-    @Field(type => Int, { nullable: true })
+    @Field(() => Int, { nullable: true })
     page?: number;
 
-    @Field(type => Int)
+    @Field(() => Int)
     totalPages: number;
 
-    @Field(type => Int, { nullable: true })
+    @Field(() => Int, { nullable: true })
     nextPage?: number;
 
-    @Field(type => Int, { nullable: true })
+    @Field(() => Int, { nullable: true })
     prevPage?: number;
 
-    @Field(type => Int)
+    @Field(() => Int)
     pagingCounter: number;
 
     @Field()
