@@ -1,53 +1,43 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import redis from 'redis';
+import util from 'util';
+
+const expiresAtType = 'EX';
 
 @Injectable()
 export class RedisService {
-  private client: redis.RedisClient;
-  constructor(private readonly configService: ConfigService) {
-    this.client = redis.createClient({
-      host: configService.get('REDIS_HOST'),
-      port: configService.get<number>('REDIS_PORT'),
-      db: configService.get<number>('REDIS_DB'),
-    });
-  }
+  constructor(private readonly client: redis.RedisClient) {}
 
   async set(key: string, value: any, duration: number): Promise<boolean> {
-    return this.client.set(
+    const redisSet = util.promisify(this.client.set).bind(this.client);
+    const ok = await redisSet(
       key.toString(),
       JSON.stringify(value),
-      'EX',
+      expiresAtType,
       duration,
-      e => {
-        if (e) {
-          throw new Error(e.toString());
-        }
-      },
     );
+
+    return Boolean(ok);
   }
 
   async exist(key: string): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-      this.client.exists(key, (err, ok) => {
-        err ? reject(err) : resolve(Boolean(ok));
-      });
-    });
+    const redisExist = util.promisify(this.client.exists).bind(this.client);
+    const exists = redisExist(key);
+
+    return Boolean(exists);
   }
 
   async get(key: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.client.get(key, (err, reply) => {
-        err ? reject(err) : resolve(JSON.parse(reply));
-      });
-    });
+    const redisGet = await util.promisify(this.client.get).bind(this.client);
+    const obj = await redisGet(key);
+
+    return JSON.parse(obj);
   }
 
   async delete(key: string): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-      this.client.del(key, (err, reply) => {
-        err ? reject(err) : resolve(!!reply);
-      });
-    });
+    const redisDel = util.promisify(this.client.del).bind(this.client);
+    const success = redisDel(key);
+
+    return Boolean(success);
   }
 }
