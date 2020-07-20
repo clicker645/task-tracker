@@ -5,10 +5,10 @@ import bcrypt from 'bcrypt';
 
 import { LoginDto } from './dto/login.dto';
 import { ITokenStorage } from './interfaces/token.storage';
-import { dictionary } from 'src/config/dictionary';
 import { UserService } from '../user/user.service';
 import { TokenDto } from './dto/token.dto';
 import { AuthEntity } from './auth.entity';
+import { dictionary } from '../../config/dictionary';
 
 @Injectable()
 export class AuthService {

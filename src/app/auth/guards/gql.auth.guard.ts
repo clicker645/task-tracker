@@ -6,6 +6,8 @@ import { ExecutionContext, Injectable } from '@nestjs/common';
 export class GqlAuthGuard extends AuthGuard('jwt') {
   getRequest(context: ExecutionContext) {
     const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext().req;
+    const req = ctx.getContext().req;
+    console.dir(req, { showHidden: true });
+    return req;
   }
 }

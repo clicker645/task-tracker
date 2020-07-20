@@ -4,16 +4,16 @@ import { PassportModule } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 
 import { authProviders } from './auth.provider';
-import { RedisModule } from 'src/infrastructure/databases/redis/redis.module';
 import { AuthController } from './auth.controller';
-import { RedisService } from 'src/infrastructure/databases/redis/redis.service';
 import { UserModule } from '../user/user.module';
 import { AuthResolver } from './auth.resolver';
+import { RedisModule } from '../../infrastructure/databases/redis/redis.module';
+import { RedisService } from '../../infrastructure/databases/redis/redis.service';
 
 @Module({
   imports: [
     UserModule,
-    RedisModule,
+    RedisModule.forRoot(),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({

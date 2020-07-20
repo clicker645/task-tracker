@@ -3,9 +3,9 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
 import { AuthService } from './auth.service';
-import { RedisService } from 'src/infrastructure/databases/redis/redis.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UserService } from '../user/user.service';
+import { RedisService } from '../../infrastructure/databases/redis/redis.service';
 
 export const authProviders: Provider[] = [
   {

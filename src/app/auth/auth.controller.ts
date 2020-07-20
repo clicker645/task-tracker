@@ -3,8 +3,8 @@ import { Controller, Body, Post, UseGuards, Get } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from './guards/jwt.guard';
-import { AuthService } from 'src/app/auth/auth.service';
 import { CurrentUser } from './decorators/user.decorator';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
