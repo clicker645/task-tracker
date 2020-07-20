@@ -7,7 +7,11 @@ export const databaseProviders = [
   {
     provide: mongooseConnection,
     useFactory: (config: ConfigService): Promise<typeof mongoose> =>
-      mongoose.connect(config.get('MONGODB_CONNECTION_STRING')),
+      mongoose.connect(config.get('MONGODB_CONNECTION_STRING'), {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+      }),
     inject: [ConfigService],
   },
 ];
