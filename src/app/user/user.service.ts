@@ -140,10 +140,6 @@ export class UserService {
     queryParams: QueryUserDto,
     options: PaginationOptions,
   ): Promise<IPaginate<User>> {
-    try {
-      return await this.userRepository.findAll(queryParams, options);
-    } catch (e) {
-      throw new InternalServerErrorException(e);
-    }
+    return await this.userRepository.findAll(queryParams, options);
   }
 }

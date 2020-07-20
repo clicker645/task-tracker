@@ -15,7 +15,7 @@ export class User extends Document {
   id: string;
 
   @Field()
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, unique: true, index: true })
   email: string;
 
   @Field(() => userStatusEnum, { defaultValue: userStatusEnum.pending })
