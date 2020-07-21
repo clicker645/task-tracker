@@ -1,6 +1,6 @@
 import { Connection, PaginateModel } from 'mongoose';
 
-import { modelsEnum } from '../../models/models.enum';
+import { modelsEnum } from '../../config/config.const';
 import { mongooseConnection } from '../../infrastructure/databases/mongoose/mongoose.provider';
 import { MongooseShareRepository } from './repositories/mongoose/mongoose.share.repository';
 import { ShareService } from './share.service';

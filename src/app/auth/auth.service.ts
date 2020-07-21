@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import bcrypt from 'bcrypt';
@@ -9,6 +13,8 @@ import { UserService } from '../user/user.service';
 import { TokenDto } from './dto/token.dto';
 import { AuthEntity } from './auth.entity';
 import { dictionary } from '../../config/dictionary';
+import { JwtFromRequestFunction } from 'passport-jwt';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -38,5 +44,17 @@ export class AuthService {
     await this.tokenStorage.set(user.id, response, expiresIn);
 
     return response;
+  }
+
+  async verify(
+    extractor: JwtFromRequestFunction,
+    req: Request,
+  ): Promise<TokenDto> {
+    const token = extractor(req);
+    if (!token) {
+      throw new UnauthorizedException();
+    }
+
+    return this.jwtService.verifyAsync(token);
   }
 }

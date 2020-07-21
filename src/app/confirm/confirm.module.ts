@@ -8,8 +8,8 @@ import { queueMessage } from './confirm.consts';
 
 @Module({
   imports: [
-    MailModule,
     ConfigModule,
+    MailModule.forRoot(),
     BullModule.registerQueueAsync({
       name: queueMessage,
       useFactory: (configService: ConfigService) => ({

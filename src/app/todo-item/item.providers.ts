@@ -6,7 +6,7 @@ import { ItemService } from './item.service';
 import { ShareService } from '../share/share.service';
 import { DocumentHistoryService } from '../document-history/document-history.service';
 import { Item, ItemSchema } from './item.entity';
-import { modelsEnum } from '../../models/models.enum';
+import { modelsEnum } from '../../config/config.const';
 
 export const itemProviders = [
   {

@@ -1,6 +1,6 @@
 import { Connection, PaginateModel } from 'mongoose';
 
-import { modelsEnum } from '../../models/models.enum';
+import { modelsEnum } from '../../config/config.const';
 import { mongooseConnection } from '../../infrastructure/databases/mongoose/mongoose.provider';
 import { MongooseDocumentHistoryRepository } from './repositories/mongoose/document-history.repository';
 import { DocumentHistoryService } from './document-history.service';

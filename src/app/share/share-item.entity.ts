@@ -2,7 +2,7 @@ import { Document, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import pagination from 'mongoose-paginate-v2';
 
-import { modelsEnum } from '../../models/models.enum';
+import { modelsEnum } from '../../config/config.const';
 
 export enum AccessType {
   Read,

@@ -18,12 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate({ iat, exp, id }) {
-    const timeDiff = exp - iat;
-    if (timeDiff <= 0) {
-      throw new UnauthorizedException();
-    }
-
+  async validate({ id }) {
     const loginResponse = (await this.tokenStorage.get(id)) as AuthEntity;
     if (!loginResponse) {
       throw new UnauthorizedException();

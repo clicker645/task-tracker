@@ -4,7 +4,7 @@ import { Connection, PaginateModel } from 'mongoose';
 import { MongooseUserRepository } from './repositories/mongoose/mognoose.user.repository';
 import { User, UserSchema } from './user.entity';
 import { mongooseConnection } from '../../infrastructure/databases/mongoose/mongoose.provider';
-import { modelsEnum } from '../../models/models.enum';
+import { modelsEnum } from '../../config/config.const';
 import { UserService } from './user.service';
 
 export const userProviders: Provider[] = [

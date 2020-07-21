@@ -8,7 +8,7 @@ import { CreateItemDto } from './dto/create-item.dto';
 import { PaginationOptions } from '../../infrastructure/databases/mongoose/pagination/paginate.params';
 import { ShareService } from '../share/share.service';
 import { DocumentHistoryService } from '../document-history/document-history.service';
-import { modelsEnum } from '../../models/models.enum';
+import { modelsEnum } from '../../config/config.const';
 import { dictionary } from '../../config/dictionary';
 import { IItemRepository } from './repositories/item.repository.interface';
 import { Item } from './item.entity';

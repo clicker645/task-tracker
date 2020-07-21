@@ -3,7 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import pagination from 'mongoose-paginate-v2';
 
 import { UserSchema } from '../user/user.entity';
-import { modelsEnum } from '../../models/models.enum';
+import { modelsEnum } from '../../config/config.const';
 
 export enum itemStatusEnum {
   planned = 'Planned',
