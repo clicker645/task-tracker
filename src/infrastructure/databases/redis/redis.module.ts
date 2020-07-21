@@ -7,7 +7,6 @@ import { RedisService } from './redis.service';
 @Module({})
 export class RedisModule {
   static forRoot(option?: redis.ClientOpts): DynamicModule {
-    console.log(option);
     return {
       module: RedisModule,
       providers: [

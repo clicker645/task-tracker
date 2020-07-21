@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import redis from 'redis';
 import util from 'util';
 
-const expiresAtType = 'EX';
+const modeDurationInSeconds = 'EX';
 
 @Injectable()
 export class RedisService {
@@ -13,7 +13,7 @@ export class RedisService {
     const ok = await redisSet(
       key.toString(),
       JSON.stringify(value),
-      expiresAtType,
+      modeDurationInSeconds,
       duration,
     );
 
