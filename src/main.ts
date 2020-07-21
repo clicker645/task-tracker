@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { useContainer } from 'class-validator';
+import { appConstants } from './config/config.const';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,11 +12,13 @@ async function bootstrap() {
     credentials: true,
   });
 
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
+
   const options = new DocumentBuilder()
     .addBearerAuth()
-    .setTitle('Task tracker')
-    .setDescription('First project using NestJS')
-    .setVersion('1.0')
+    .setTitle(appConstants.swagger.title)
+    .setDescription(appConstants.swagger.description)
+    .setVersion(appConstants.swagger.version)
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('swagger', app, document);

@@ -1,34 +1,32 @@
-// import {
-//   ForbiddenException,
-//   Injectable,
-//   NestMiddleware,
-//   UnauthorizedException,
-// } from '@nestjs/common';
+import { ForbiddenException, Injectable, NestMiddleware } from '@nestjs/common';
+import { NestCasbinService } from 'nestjs-casbin-mongodb';
+import { ExtractJwt } from 'passport-jwt';
 
-// @Injectable()
-// export class CasbinRBACMiddleware implements NestMiddleware {
-//   constructor(
-//     private readonly tokenService: TokenService,
-//     private readonly casbin: CasbinService,
-//   ) {}
+import { AuthService } from '../app/auth/auth.service';
 
-//   async use(req, res, next: Function) {
-//     const bearerToken = req.headers.authorization;
-//     if (bearerToken) {
-//       const data = (await this.tokenService.verify(
-//         bearerToken,
-//       )) as ITokenPayload;
+@Injectable()
+export class CasbinRBACMiddleware implements NestMiddleware {
+  constructor(
+    private readonly casbinService: NestCasbinService,
+    private readonly authService: AuthService,
+  ) {}
 
-//       if (
-//         !(await this.casbin.checkPermissions(req.url, data.role, req.method))
-//       ) {
-//         console.log(req.url, data.role, req.method);
-//         throw new ForbiddenException();
-//       }
+  async use(req, res, next: Function) {
+    const payload = await this.authService.verify(
+      ExtractJwt.fromAuthHeaderAsBearerToken(),
+      req,
+    );
 
-//       next();
-//     } else {
-//       throw new UnauthorizedException();
-//     }
-//   }
-// }
+    const hasPermission = await this.casbinService.enforce(
+      payload.id,
+      req.path,
+      req.method,
+    );
+
+    if (!hasPermission) {
+      throw new ForbiddenException();
+    }
+
+    next();
+  }
+}
