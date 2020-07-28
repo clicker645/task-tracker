@@ -18,6 +18,7 @@ cache:
 Linter:
   stage: lint
   script:
+    - npm install eslint
     - npm run lint
 
 Build:
