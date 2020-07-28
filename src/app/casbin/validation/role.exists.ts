@@ -1,5 +1,4 @@
 import {
-  ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
@@ -13,7 +12,7 @@ export class RolesExistConstraint implements ValidatorConstraintInterface {
 
   private wrongRole: string;
 
-  async validate(targetRoles: string[], args: ValidationArguments) {
+  async validate(targetRoles: string[]) {
     const roles = await this.casbin.getAllRoles();
     let notExist = false;
     targetRoles.forEach(targetRole => {
@@ -26,7 +25,7 @@ export class RolesExistConstraint implements ValidatorConstraintInterface {
     return !notExist;
   }
 
-  defaultMessage(validationArguments?: ValidationArguments): string {
+  defaultMessage(): string {
     return `Error: role ${this.wrongRole} does not exist in the database`;
   }
 }

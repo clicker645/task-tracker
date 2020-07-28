@@ -1,5 +1,4 @@
 import {
-  ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
@@ -14,7 +13,7 @@ export class PermissionsExistConstraint
 
   private wrongPermission: string;
 
-  async validate(targetPermissions: string[], args: ValidationArguments) {
+  async validate(targetPermissions: string[]) {
     const permissions = await this.casbin.getAllSubjects();
     let notExist = false;
     targetPermissions.forEach(targetPermission => {
@@ -27,7 +26,7 @@ export class PermissionsExistConstraint
     return !notExist;
   }
 
-  defaultMessage(validationArguments?: ValidationArguments): string {
+  defaultMessage(): string {
     return `Error: permission ${this.wrongPermission} does not exist in the database`;
   }
 }

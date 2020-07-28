@@ -20,7 +20,7 @@ export class MailModule {
         {
           provide: Mail,
           useFactory: config => {
-            let transport = {
+            const transport = {
               service: config.get('MAIL_SERVICE'),
               auth: {
                 user: config.get('ADMIN_MAIL'),

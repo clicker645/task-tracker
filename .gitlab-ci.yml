@@ -1,13 +1,35 @@
 image: "node:14.2.0-alpine"
 
-before_script:
-  - npm install
+variables:
+  NODE_ENV: production
+
+stages:
+  - lint
+  - build
+  - test
+  - deploy
 
 cache:
   paths:
     - node_modules/
 
-test:
+run_linter:
+  stage: lint
   script:
+    - npm run lint
+
+run_build:
+  stage: build
+  script:
+    - npm install
     - npm run build
+
+run_test:
+  stage: test
+  script:
     - npm run test
+
+run_deploy:
+  stage: deploy
+  script:
+    - echo "DEPLOYMENT TO SERVER..."

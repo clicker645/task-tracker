@@ -1,5 +1,4 @@
 import {
-  ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
@@ -11,12 +10,12 @@ import { UserService } from '../user.service';
 export class UserExistConstraint implements ValidatorConstraintInterface {
   constructor(private readonly userService: UserService) {}
 
-  async validate(userId: string, args: ValidationArguments) {
+  async validate(userId: string) {
     const user = await this.userService.findById(userId);
     return !!user;
   }
 
-  defaultMessage(validationArguments?: ValidationArguments): string {
+  defaultMessage(): string {
     return `Error: user not found`;
   }
 }
