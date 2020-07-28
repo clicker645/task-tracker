@@ -13,6 +13,7 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // SOME CHANGES
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.useGlobalFilters(new HttpExceptionsFilter());
 
