@@ -1,7 +1,7 @@
 image: "node:14.2.0-alpine"
 
 before_script:
-  - apt-get update -qq && npm install
+  - npm install
 
 cache:
   paths:
