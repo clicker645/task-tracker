@@ -1,5 +1,6 @@
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { ClassCleaner } from '../transform/class.cleaner';
+import { ValidationError } from 'class-validator';
 
 export const queryValidations = [
   new ValidationPipe({

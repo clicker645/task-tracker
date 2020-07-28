@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
 import { appConstants } from './config/config.const';
+import { HttpExceptionsFilter } from './components/filters/exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,6 +14,7 @@ async function bootstrap() {
   });
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
+  app.useGlobalFilters(new HttpExceptionsFilter());
 
   const options = new DocumentBuilder()
     .addBearerAuth()
