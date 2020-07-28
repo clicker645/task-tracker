@@ -34,12 +34,10 @@ Test:
 Dockerize and push to regestry:
   stage: dockerize
   image: docker:18.09.7
-#  rules:
-#    - if: '$CI_COMMIT_TAG != null'
   only:
     - tags
   script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+    - docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker build -t $IMAGE:$CI_COMMIT_TAG .
     - docker push $IMAGE:$CI_COMMIT_TAG
 
