@@ -8,8 +8,8 @@ stages:
   - lint
   - build
   - test
-  - deploy
   - dockerize
+  - deploy
 
 cache:
   paths:
